@@ -1,5 +1,5 @@
 %% Dokumenteinstellungen
-\documentclass[12pt,german]{book}
+\documentclass[12pt,german]{report}
 
 %% Verwendete Pakete
 \usepackage[T1]{fontenc}
@@ -9,6 +9,8 @@
 \geometry{verbose,a4paper,tmargin=4cm,bmargin=4cm,lmargin=2.8cm,rmargin=2.8cm}
 \usepackage{babel}
 \usepackage{graphicx}
+\usepackage{titlesec}
+\titleformat{\chapter}{\huge}{\thechapter.}{20pt}{\huge}
 
 %% Einstellungen
 \setlength{\oddsidemargin}{0cm}
@@ -23,13 +25,24 @@
 
 %% Titelblatt
 \input{ba_titel.tex}
+\newpage 
+\thispagestyle{empty}
+\quad 
+\newpage
 
 %% Inhaltsverzeichnis
 \tableofcontents
-\cleardoublepage
+\newpage 
+\thispagestyle{empty}
+\quad 
+\newpage
 
 %% Formaljuristisches
 \input{ba_jurist.tex}
+\newpage 
+\thispagestyle{empty}
+\quad 
+\newpage
 
 %% Einzeldokumente, z.B. in Kapitel aufgeteilt
 \input{kapitel/kapitel0.tex}
@@ -39,6 +52,8 @@
 
 \begin{thebibliography}{}
 %% Zitieren Sie diesen ersten Eintrag mit \cite{bib_1}
-\bibitem{bib_1} Autor, Name der Publikation, Verlag, Auflage, Erscheinungsjahr
+\bibitem{bib_1} Howard, J., Ruder, S., Universal Language Model Fine-tuning for Text Classification. 2018,  arXiv:1801.06146 
 \end{thebibliography}
+
+
 \end{document}
