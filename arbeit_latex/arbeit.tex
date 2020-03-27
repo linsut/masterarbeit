@@ -1,0 +1,44 @@
+%% Dokumenteinstellungen
+\documentclass[12pt,german]{book}
+
+%% Verwendete Pakete
+\usepackage[T1]{fontenc}
+\usepackage[latin1]{inputenc}
+\usepackage{times}
+\usepackage{geometry}
+\geometry{verbose,a4paper,tmargin=4cm,bmargin=4cm,lmargin=2.8cm,rmargin=2.8cm}
+\usepackage{babel}
+\usepackage{graphicx}
+
+%% Einstellungen
+\setlength{\oddsidemargin}{0cm}
+\setlength{\topmargin}{-1.5cm}
+\setlength{\textheight}{22cm}
+\setlength{\textwidth}{16cm}
+\setlength{\headsep}{1cm}
+\setlength{\parindent}{0ex}
+\setlength{\parskip}{2.0ex plus 0.9ex minus 0.4ex}
+
+\begin{document}
+
+%% Titelblatt
+\input{ba_titel.tex}
+
+%% Inhaltsverzeichnis
+\tableofcontents
+\cleardoublepage
+
+%% Formaljuristisches
+\input{ba_jurist.tex}
+
+%% Einzeldokumente, z.B. in Kapitel aufgeteilt
+\input{kapitel/kapitel0.tex}
+
+%% Abbildungsverzeichnis
+\listoffigures
+
+\begin{thebibliography}{}
+%% Zitieren Sie diesen ersten Eintrag mit \cite{bib_1}
+\bibitem{bib_1} Autor, Name der Publikation, Verlag, Auflage, Erscheinungsjahr
+\end{thebibliography}
+\end{document}
