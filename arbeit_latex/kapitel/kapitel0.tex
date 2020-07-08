@@ -1,23 +1,33 @@
 %%
 %% Kapitel
 %%
-\chapter{Einf\"uhrung}
+\chapter{Einleitung}
+Was w\"are, wenn Computer von ihren Erfahrungen lernen k\"onnten, so wie Menschen es tun? Eine Frage, aus der viele Forschungsfelder entsprungen sind. \textbf{K\"unstliche Intelligenz} ist ein gro{\ss}es Themengebiet, aber ohne \textbf{Machine Learning} sind Computer nicht "`schlauer"' als die Programme, die sie ausf\"uhren - und die von Menschen programmiert werden. Zwar kann ein Computer ein Problem mit vorgegebenen L\"osungsweg meist weit schneller l\"osen als der Mensch selber, aber wie kommt er auf diesen L\"osungsweg? \textbf{Machine Learning} und\textbf{ Deep Learning} konzentrieren sich auf genau diese Problemstellung.\\
+Seit der Entwicklung erster \textbf{ Machine Learning} Algorithmen hat dieses Feld immense Fortschritte gemacht, besonders in den letzten Jahren, in denen auch\textbf{ Deep Learning} durch die Entwicklung immer schnellerer Prozessoren sowie der M\"oglichkeiten der modernen GPUs zur Parallelisierung von Aufgaben immer weiter in den Vordergrund r\"ucken konnte.
+Machine Learning und Deep Learning ist heute schon weit verbreitet und wird in den verschiedensten Feldern eingesetzt - von  E-Mail Spam Klassifizierung bis hin zur Erkennung von Tumoren auf R\"ontgenbildern, es bleibt aber weiterhin ein gro{\ss}es Forschungsfeld.
+
+
+\section{Natural Language Processing}
+Ein wichtiger Teil der K\"unstlichen Intelligenz ist die \textbf{Computerlinguistik}, oder auch \textbf{Natural Language Processing (NLP)}. Menschliche Sprache ist f\"ur Maschinen nur schwer verst\"andlich, da sie im Gegensatz zu Maschinensprachen keiner genauen Logik folgen: Sie ist im Grunde unvorhersehbar und f\"uhrt selbst bei Menschen zu Missverst\"andnissen. Trotzdem gibt es heutzutage viele Anwendungen von \textbf{NLP} im Alltag, und Beispiele wie die heutigen Sprachassistenten zeigen, wie weit dieses Feld in einer sehr kurzen Zeit voranschreiten konnte.\\
+Aufgrund der Komplexit\"at des Problems gibt es meherer Herangehensweisen, um nat\"urliche Sprache f\"ur Maschinen verst\"andlich zu machen. Ihnen allen ist gemein, dass sie Sprache durch Zahlen repr\"asentieren. \\
+Es gibt Ans\"atze, die W\"orter als einzelne Einheiten nehmen, und diesen einfach eine Zahl zuordnen. Dies hat den Vorteil, dass es leicht umzusetzen ist und auch keine hohe Anzahl an Trainingsdaten braucht. Das Problem daran ist, dass so sehr viel Bedeutung verloren gehen kann - in nat\"urlicher Sprache sind h\"aufig die umgebenden W\"orter genauso wichtig wie das betrachtete Wort. Kontext und Wortzusammenh\"ange gehen durch diesen Ansatz verloren.\\
+Eine weitere bekannte Technik ist der Einsatz von Wortverktoren, die durch ihre hohe Dimensionalit\"at viele Beziehungen zwischen W\"ortern bewahren k\"onnen. Diese Repr\"asentation ist vielversprechend, aber auch hier kann nicht immer der Kontext gewahrt werden, da einem Wort genau ein Vektor zugeordnet wird.\\
+Eine Verbesserung, nicht nur in diesem Aspekt, bringen \textbf{Sprachmodelle}. Sie k\"onnen vielf\"altig eingesetzt werden, haben einen gro{\ss}en Wortschatz in verschiedenen Sprachen und sind vortrainiert - sie m\"ussen entsprechend nur der Aufgabe angepasst werden, was einer enormen Zeitersparnis entspricht. Durch Feinabstimmung der verschiedenen Parameter kann bei Sprachmodellen auch viel erreicht werden.
+
+\section{Sentiment Analysis}
+\textbf{Sentiment Analysis} ist die Einordnung von Text in Kategorien von Emotionen, wobei es verschiedene Skalen gibt. Die einfachste ist hierbei die Einordnung in "`Neutral"', "`Positiv"' und "`Negativ"', aber es gibt auch Zuordnungen zu Werten von -1 bis 1 oder anderen Zahlenwerten. Diese Werte werden nicht immer mit einheitlicher Bedeutung genutzt. 
+
+
+\section{Stance detection}
+Bei \textbf{Stance Detection} geht es darum, herauszufinden, wie die Haltung des Autors eines Textes zu einer bestimmten These oder einem allgemeinen Begriff ist. Beste Ergebnisse wurden durch Unterteilung der Aufgabe in zwei Schritte erzielt; Zun\"achst wird \textbf{Topic Modeling} genutzt, um herauszufinden, ob der Text \"uberhaupt mit der Stance in Verbindung gebracht werden kann. Daruafhin wird, falls dies der Fall ist, auf die Stance bezogene \textbf{Sentiment Analysis} genutzt, um die Haltung des Autors zu ermitteln.
+
+
+\section{Zielsetzung und Vorgehen}
+Ziel dieser Arbeit ist es, zu erforschen wie gut sich verschiedene \textbf{Sprachmodelle} zum Einsatz in  Sentiment Analysis und Stance Detection eignen.
+Dazu werden die verschiedenen Modelle vorgestellt und analysiert, welche f\"ur den Einsatz in Frage kommen, da die Modelle durch unterschiedlichen Aufbau oder auch verf\"ugbare Datens\"atze nicht alle gleich gute Herangehensweisen an die Problemstellung darstellen.
+F\"ur die Versuche werden mehrere \textbf{Corpora} verwendet, von denen die meisten \"offentlich zug\"anglich sind. Alle  \textbf{Corpora} bestehen nur aus Tweets, die sich aufgrund der limitierten Zeichenl\"ange und der Popularit\"at  der Plattform \textit{Twitter} gut f\"ur die Auswertung in beiden Aufgaben eignen.
+Die Ergebnisse werden ausgewertet und miteinander verglichen.
 
 
 
-%\begin{verbatim} 
-%Blablabla
-%  Blablabla
-%\end{verbatim} 
 
-
-\section{Stand der Wissenschaft und Technik}
-
-
-%Blablabla \ref{pict_1}
-
-%\begin{figure}
-%\centerline{\includegraphics[width=7cm]{pics/athene.png}}
-%\caption{Blablabla}
-%\label{pict_1}
-%\end{figure}
