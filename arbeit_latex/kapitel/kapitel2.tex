@@ -15,28 +15,34 @@ Es handelt sich ausschlie{\ss}lich um Daten, die von der Plattform \textit{Twitt
 Die Daten werden alle vorverarbeitet, um die Texte einheitlich und gut verarbeitbar zu machen. Hierzu werden f\"ur die Tweets folgende Schritte durchgangen:
 \begin{itemize}
 \item alle W\"orter in Kleinbuchstaben umwandeln
+\item doppelte Buchstaben entfernen %Beispiel
 \item Whitespaces an Anfang und Ende entfernen
 
 \end{itemize}
 F\"ur Sentiment Analysis werden zus\"atzlich die weiteren Schritte ausgef\"uhrt:
 \begin{itemize}
-\item Nutzernamen (handles) entfernen
-\item Links entfernen 
+\item Nutzernamen (handles) entfernen oder in Tokens wandeln
+\item Links entfernen oder in Tokens wandeln
 \end{itemize}
-
-%Weitere Data Cleaning Schritte?
 
 Weiterhin werden die Tweet einer \textbf{Tokenization} unterzogen, durch die die W\"orter in \textbf{Tokens} umgewandelt werden. Hierbei wird auch \textbf{Stemming} angewendet: Dadurch werden die W\"orter in ihre Grundform umgewandelt mit vorausgehenden oder nachfolgenden Silben als separate Tokens. Aus dem Wort "`playing"' werden so z.B. die zwei Tokens <play> und <ing>. Diese Art der \textbf{Tokenization} ist f\"ur den Einsatz mit Sprachmodellen am besten geeignet, da auch in diesen nicht alle Vokabeln einer Sprache enthalten sein k\"onnen - das w\"are schlicht ein zu gro{\ss}es Vokabular. Durch \textbf{Stemming} wird gew\"ahrleistet, dass die meisten W\"orter, sowie die jeweilige Präfix und Suffix je einem Vektor zugeordnet werden k\"onnen (sollten keine Rechtschreibfehler enthalten sein).\\
 Wie bei sehr vielen Machine Learning Aufgaben h\"angen die Ergebnisse stark von der Qualit\"at der genutzten Daten ab. Es wurde demnach versucht, alle Datens\"atze so zu reinigen, dass die Performanz optimal wurde. Auf etwaige zus\"atzliche Schritte wird in der jeweiligen Beschreibung eingegangen.
-%subsections für die verschiedenen Datensätze  
+
+%subsections für die verschiedenen Datensätze 
+\subsection{Sentiment140}
+\label{sec:sentiment140}
+Dieser Datensatz \cite[sentiment140] enth\"alt 16 Millionen Tweets, die mit einem Sentiment-Wert von 0 bis 4 annotiert sind, wobei 4 positiv und 0 negativ ist. Da \textbf{sentiment140} von seinen Urhebern schon zum Training f\"ur Sentiment Analysis genutzt wurde, ist dieser Datensatz schon weitestgehend ges\"aubert: Er enth\"alt nur noch wenige doppelte Buchstaben und keine Emoticons, was f\"ur die reine Textauswertung hilfreich ist. Somit m\"ussen in diesem Datensatz noch Nutzernamen und Links entfernt oder in Tokens umgewandelt werden.\\
+Es sind weiterhin nur Tweets enthalten, in denen nicht positive und negative Sentiments gleichzeitig ausgedr\"uckt werden.
+Der Datensatz wurde durch Auswertung von Emoticons erstellt.
 
 \section{Sentiment Analysis}
 
 
 
 \subsection{Ausgangsbasis}
-Um einen Vergleich zu haben, wie performant und genau \textbf{Sentiment Analysis} mit Sprachmodellen ist, wurde zun\"achst ein Ansatz ausgewertet, der keinen Gebrauch von Deep Learning macht. 
-%Beschreibung, Code zu TextBlob, Ergebnisse?
+Um einen Vergleich zu haben, wie performant und genau \textbf{Sentiment Analysis} mit Sprachmodellen ist, wurde zun\"achst ein Ansatz ausgewertet, der keinen Gebrauch von Deep Learning macht. Die Ver\"anderung der Genauigkeit im Vergleich zu diesem Ansatz gibt einen Anhaltspunkt, wie viel Sprachmodelle in Sentiment Analysis leisten k\"onnen.\\
+Zur Auswerung wird der Datensatz \ref{sec:sentiment140} genommen, da dieser gen\"ugend gro{\ss} ist, um eine fundierte Aussage zu treffen. Dieser Datensatz wird mit pythons \textit{pandas} Bibliothek eingelesen, ges\"aubert und im Anschluss mit der Bibliothek \textit{TextBlob} ausgwertet. Diese Auswertung basiert auf manuell erstellten Dokumenten, in denen allen W\"ortern Sentiment-Werte zugeordnet wurden. \textit{TextBlob} werten diese Werte f\"ur einen gegebenen Text aus und gibt einen Wert zwischen -1 und 1 zur\"uck (negativ zu positiv).
+%Code zu TextBlob
 \lstset{language=Python}
 \lstset{frame=lines}
 \lstset{caption={Auswertung mit TextBlob}}
@@ -46,6 +52,8 @@ Um einen Vergleich zu haben, wie performant und genau \textbf{Sentiment Analysis
 \begin{lstlisting}
 filteredData.tweet.map(lambda x: TextBlob(x).sentiment.polarity)
 \end{lstlisting}
+%Ergebnisse?
+%Auf Vader eingehen?
 
 \subsection{ELMo}
 
