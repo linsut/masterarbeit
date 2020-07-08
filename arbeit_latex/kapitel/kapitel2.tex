@@ -1,0 +1,60 @@
+%%
+%% Kapitel
+%%
+\chapter{Einsatz von Sprachmodellen}
+Im Zuge dieser Arbeit wurden Versuche mit verschiedenen Sprachmodellen durchgef\"uhrt, die im Folgenden beschrieben werden.
+
+\section{Versuchsaufbau}
+Der Source Code f\"ur die Versuche ist in Python verfasst, da die Sprachmodelle alle eine \"ubersichtliche Schnittstelle zur Verwendung in Python bieten. Die erstellten Netze sind durch die Bibliotheken keras \cite{keras} und Tensorflow \cite{tensorflow} implementiert worden. \\
+Der Code wurde zum Testen auf Googles Plattform \textit{Google Colab} \cite{colab} ausgef\"uhrt, da mit dieser Plattform eine Laufzeitumgebung mit M\"oglichkeit zur Nutzung von einer GPU sowie - falls n\"otig - einer TPU zur Verf\"ugung steht. Die genutzten Datens\"atze werden \"uber Links zu der Datenquelle (\textit{kaggle.com, github.com}) eingebunden.
+
+%Was ist für Laufzeittests passiert?
+
+\section{Die Daten}
+Es handelt sich ausschlie{\ss}lich um Daten, die von der Plattform \textit{Twitter} genommen wurden. Einige der Datens\"atze sind gelabelt, um damit \textbf{Supervised Learning} zu betreiben, andere sind zum Test der entstehenden Netze und nicht gelabelt.\\
+Die Daten werden alle vorverarbeitet, um die Texte einheitlich und gut verarbeitbar zu machen. Hierzu werden f\"ur die Tweets folgende Schritte durchgangen:
+\begin{itemize}
+\item alle W\"orter in Kleinbuchstaben umwandeln
+\item Whitespaces an Anfang und Ende entfernen
+
+\end{itemize}
+F\"ur Sentiment Analysis werden zus\"atzlich die weiteren Schritte ausgef\"uhrt:
+\begin{itemize}
+\item Nutzernamen (handles) entfernen
+\item Links entfernen 
+\end{itemize}
+
+%Weitere Data Cleaning Schritte?
+
+Weiterhin werden die Tweet einer \textbf{Tokenization} unterzogen, durch die die W\"orter in \textbf{Tokens} umgewandelt werden. Hierbei wird auch \textbf{Stemming} angewendet: Dadurch werden die W\"orter in ihre Grundform umgewandelt mit vorausgehenden oder nachfolgenden Silben als separate Tokens. Aus dem Wort "`playing"' werden so z.B. die zwei Tokens <play> und <ing>. Diese Art der \textbf{Tokenization} ist f\"ur den Einsatz mit Sprachmodellen am besten geeignet, da auch in diesen nicht alle Vokabeln einer Sprache enthalten sein k\"onnen - das w\"are schlicht ein zu gro{\ss}es Vokabular. Durch \textbf{Stemming} wird gew\"ahrleistet, dass die meisten W\"orter, sowie die jeweilige Präfix und Suffix je einem Vektor zugeordnet werden k\"onnen (sollten keine Rechtschreibfehler enthalten sein).\\
+Wie bei sehr vielen Machine Learning Aufgaben h\"angen die Ergebnisse stark von der Qualit\"at der genutzten Daten ab. Es wurde demnach versucht, alle Datens\"atze so zu reinigen, dass die Performanz optimal wurde. Auf etwaige zus\"atzliche Schritte wird in der jeweiligen Beschreibung eingegangen.
+%subsections für die verschiedenen Datensätze  
+
+\section{Sentiment Analysis}
+
+
+
+\subsection{Ausgangsbasis}
+Um einen Vergleich zu haben, wie performant und genau \textbf{Sentiment Analysis} mit Sprachmodellen ist, wurde zun\"achst ein Ansatz ausgewertet, der keinen Gebrauch von Deep Learning macht. 
+%Beschreibung, Code zu TextBlob, Ergebnisse?
+\lstset{language=Python}
+\lstset{frame=lines}
+\lstset{caption={Auswertung mit TextBlob}}
+\lstset{captionpos=b}
+\lstset{label={lst:code_direct}}
+\lstset{basicstyle=\footnotesize}
+\begin{lstlisting}
+filteredData.tweet.map(lambda x: TextBlob(x).sentiment.polarity)
+\end{lstlisting}
+
+\subsection{ELMo}
+
+\subsection{BERT}
+
+
+
+\section{Stance Detection}
+
+\subsection{BERT}
+
+\subsection{Verwendung anderer Fine Tuning Methoden}
