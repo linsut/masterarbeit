@@ -10,6 +10,8 @@
 \usepackage{babel}
 \usepackage{graphicx}
 \usepackage{titlesec}
+\usepackage{setspace}
+\usepackage{listings}
 \titleformat{\chapter}{\huge}{\thechapter.}{20pt}{\huge}
 
 %% Einstellungen
@@ -45,14 +47,25 @@
 \newpage
 
 %% Einzeldokumente, z.B. in Kapitel aufgeteilt
+
+\begin{onehalfspace}
 \input{kapitel/kapitel0.tex}
+\input{kapitel/kapitel1.tex}
+\input{kapitel/kapitel2.tex}
+\input{kapitel/kapitel3.tex}
+\end{onehalfspace}
 
 %% Abbildungsverzeichnis
 \listoffigures
 
 \begin{thebibliography}{}
 %% Zitieren Sie diesen ersten Eintrag mit \cite{bib_1}
-\bibitem{bib_1} Howard, J., Ruder, S., Universal Language Model Fine-tuning for Text Classification. 2018,  arXiv:1801.06146 
+\bibitem{ulm} Howard, J., Ruder, S., Universal Language Model Fine-tuning for Text Classification. 2018,  arXiv:1801.06146 
+\bibitem{attention} Vaswani, A. et al., Attention Is All You Need. 2017,  arXiv:1706.03762v5 
+\bibitem{elmo} Peters, M.,  Neumann, M.,  Iyyer, M., Gardner, M.,  Clark, C. , Lee, K., Zettlemoyer, L.,  Deep contextualized word rep-resentations. 2018, arXiv:1802.05365v2
+\bibitem{bert} Devlin, J., Chang, M., Lee K. , Toutanova, K., BERT: Pre-training of Deep Bidirectional Transformers forLanguage Understanding. 2019, arXiv:1810.04805v2
+\bibitem{gpt} Radford,  A.,  Narasimhan,  K.,  Salimans,  T.,  and  Sutskever,  I., Improving language understanding by generative pre-training. 2018
+\bibitem{sentiment140} Go, A., Bhayani, R., Huang, L., Twitter Sentiment Classification using Distant Supervision. 2009
 \end{thebibliography}
 
 
