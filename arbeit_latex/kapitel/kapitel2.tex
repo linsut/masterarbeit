@@ -11,27 +11,22 @@ Der Code wurde zum Testen auf Googles Plattform \textit{Google Colab} \cite{cola
 %Was ist für Laufzeittests passiert?
 
 \section{Die Daten}
-Es handelt sich ausschlie{\ss}lich um Daten, die von der Plattform \textit{Twitter} genommen wurden. Einige der Datens\"atze sind gelabelt, um damit \textbf{Supervised Learning} zu betreiben, andere sind zum Test der entstehenden Netze und nicht gelabelt.\\
+F\"ur \textbf{Sentiment Analysis} werden ausschlie{\ss}lich Daten genutzt, die von der Plattform \textit{Twitter} genommen wurden. Diese Daten eignen sich sehr gut f\"ur diese Aufgabe, da die L\"ange der Textst\"ucke auf 280 Zeichen begrenzt ist \cite{twitter} und es eine gro{\ss}e Nutzerbasis und damit eine gro{\ss}e Vielfalt an formulierten Texten gibt. Hierbei werden die Tweets genommen, die nur Text und entsprechende Emojis enthalten und in Englisch verfasst sind. Einige der genutzten Datens\"atze sind gelabelt, um damit \textbf{Supervised Learning} zu betreiben, andere sind zum Test der entstehenden Netze und nicht gelabelt.\\
 Die Daten werden alle vorverarbeitet, um die Texte einheitlich und gut verarbeitbar zu machen. Hierzu werden f\"ur die Tweets folgende Schritte durchgangen:
 \begin{itemize}
 \item alle W\"orter in Kleinbuchstaben umwandeln
 \item doppelte Buchstaben entfernen %Beispiel
 \item Whitespaces an Anfang und Ende entfernen
-
-\end{itemize}
-F\"ur Sentiment Analysis werden zus\"atzlich die weiteren Schritte ausgef\"uhrt:
-\begin{itemize}
-\item Nutzernamen (handles) entfernen oder in Tokens wandeln
-\item Links entfernen oder in Tokens wandeln
 \end{itemize}
 
-Weiterhin werden die Tweet einer \textbf{Tokenization} unterzogen, durch die die W\"orter in \textbf{Tokens} umgewandelt werden. Hierbei wird auch \textbf{Stemming} angewendet: Dadurch werden die W\"orter in ihre Grundform umgewandelt mit vorausgehenden oder nachfolgenden Silben als separate Tokens. Aus dem Wort "`playing"' werden so z.B. die zwei Tokens <play> und <ing>. Diese Art der \textbf{Tokenization} ist f\"ur den Einsatz mit Sprachmodellen am besten geeignet, da auch in diesen nicht alle Vokabeln einer Sprache enthalten sein k\"onnen - das w\"are schlicht ein zu gro{\ss}es Vokabular. Durch \textbf{Stemming} wird gew\"ahrleistet, dass die meisten W\"orter, sowie die jeweilige Präfix und Suffix je einem Vektor zugeordnet werden k\"onnen (sollten keine Rechtschreibfehler enthalten sein).\\
+Weiterhin werden die Tweets einer \textbf{Tokenization} unterzogen, durch die die W\"orter, Emojis und Links in \textbf{Tokens} umgewandelt werden. Hierbei wird auch \textbf{Stemming} angewendet: Dadurch werden die W\"orter in ihre Grundform umgewandelt mit vorausgehenden oder nachfolgenden Silben als separate Tokens. Aus dem Wort "`playing"' werden so z.B. die zwei Tokens <play> und <ing>. Diese Art der \textbf{Tokenization} ist f\"ur den Einsatz mit Sprachmodellen am besten geeignet, da auch in diesen nicht alle Vokabeln einer Sprache enthalten sein k\"onnen - das w\"are schlicht ein zu gro{\ss}es Vokabular. Durch \textbf{Stemming} wird gew\"ahrleistet, dass die meisten W\"orter, sowie die jeweilige Pr\"afix und Suffix je einem Vektor zugeordnet werden k\"onnen (sollten keine Rechtschreibfehler enthalten sein).\\
+Die Daten f\"ur den Teil \textbf{Stance detection} haben unterschiedliche Urspr\"unge. Datens\"atze bestehen haupts\"achlich aus Artikeln, deren \"Uberschriften und den jeweiligen angesprochenen Stances. Auch diese Daten werden einer \textbf{Tokenization} unterzogen. Diese unterscheidet sich nur leicht von der f\"ur die \textbf{Sentiment Analysis} durchgef\"uhrte, da die Artikel im Allgemeinen keine sogenannten \textit{handles} oder Emojis enthalten. Diese Datens\"atze sind gelabelt, um einen sp\"ateren Test m\"oglich zu machen.\\
 Wie bei sehr vielen Machine Learning Aufgaben h\"angen die Ergebnisse stark von der Qualit\"at der genutzten Daten ab. Es wurde demnach versucht, alle Datens\"atze so zu reinigen, dass die Performanz optimal wurde. Auf etwaige zus\"atzliche Schritte wird in der jeweiligen Beschreibung eingegangen.
 
 %subsections für die verschiedenen Datensätze 
 \subsection{Sentiment140}
 \label{sec:sentiment140}
-Dieser Datensatz \cite[sentiment140] enth\"alt 16 Millionen Tweets, die mit einem Sentiment-Wert von 0 bis 4 annotiert sind, wobei 4 positiv und 0 negativ ist. Da \textbf{sentiment140} von seinen Urhebern schon zum Training f\"ur Sentiment Analysis genutzt wurde, ist dieser Datensatz schon weitestgehend ges\"aubert: Er enth\"alt nur noch wenige doppelte Buchstaben und keine Emoticons, was f\"ur die reine Textauswertung hilfreich ist. Somit m\"ussen in diesem Datensatz noch Nutzernamen und Links entfernt oder in Tokens umgewandelt werden.\\
+Dieser Datensatz \cite{sentiment140} enth\"alt 16 Millionen Tweets, die mit einem Sentiment-Wert von 0 bis 4 annotiert sind, wobei 4 positiv und 0 negativ ist. Da \textbf{sentiment140} von seinen Urhebern schon zum Training f\"ur Sentiment Analysis genutzt wurde, ist dieser Datensatz schon weitestgehend ges\"aubert: Er enth\"alt nur noch wenige doppelte Buchstaben und keine Emoticons, was f\"ur die reine Textauswertung hilfreich ist. Somit m\"ussen in diesem Datensatz noch Nutzernamen und Links entfernt oder in Tokens umgewandelt werden.\\
 Es sind weiterhin nur Tweets enthalten, in denen nicht positive und negative Sentiments gleichzeitig ausgedr\"uckt werden.
 Der Datensatz wurde durch Auswertung von Emoticons erstellt.
 
