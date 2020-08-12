@@ -9,12 +9,11 @@ London - England + Spanien = Madrid
 \end{verbatim} 
 Mit ganzen Textsequenzen k\"onnen aber auch diese Vektor Embeddings aufgrund der fehlenden Kontextinformationen nur bedingt gut umgehen.
 
-
 \section{Vergleich zu anderen Ans\"atzen}
 Wie schon erw\"ahnt muss Sprache sequentiell versarbeitet werden. Dazu werden meist \textbf{Gated RNNs} und \textbf{Long Short Term Memory (LSTM)} - Netzwerke verwendet \cite{attention}. Durch einige Techniken kann man mit diesen Netzen auch gute Laufzeiten erreichen, aber es besteht ein weiteres Problem: Der Kontext der W\"orter geht verloren. Zwar k\"onnen \textbf{LSTMs} gut mit kurzen S\"atzen umgehen, aber je l\"anger die Wortsequenz, desto schlechter kann sie verarbeitet werden: Es gibt dabei Probleme mit \textbf{vanishing} oder \textbf{exploding gradients}, je nach Einstellung der Parameter.\\
 Durch die sequentiellen Verarbeitung steigt auch die Verarbeitungszeit mit der Textl\"ange an, wobei \textbf{LSTMs} generell langsamer sind als \textbf{RNNs}, da die Neuronen komplexer sind.\\
 Der Umstand, dass diese Netze f\"ur jede Anwendung spezifisch trainiert werden m\"ussen, macht ihren Einsatz sehr umst\"andlich. Sprachmodelle hingegen sind vortrainiert, sie brauchen nur eine geringe Anzahl Daten und damit auch wenig Zeit, um f\"ur verschiedene Anwendungen einsatzbereit zu sein.
-
+% Erklärung warum unsupervised/semi-supervised
 
 \section{Transformer}
 \textbf{Transformer} sind die Basis vieler der heutigen Sprachmodelle \cite{bert}\cite{gpt}. Sie wurden 2017 entwickelt, um das Problem der sequentiellen Verarbeitung zu l\"osen: Als Eingabe kann ein \textbf{Transformer} eine ganze Textsequenz verarbeiten.\\
@@ -29,20 +28,23 @@ Wie in Abbildung \ref{fig:attention} zu sehen, wird die Eingabe zun\"achst in Wo
 \begin{verbatim} 
 Der braune Hund
 \end{verbatim} 
-bezieht sich z.B. das Wort "`Der"' sowie das Adjektiv "`braune"' auf das Wort "`Hund"'. In dem Attention-Vektor w\"aren entsprechend die Werte f\"ur "`Hund"' in den Vektoren der beiden anderen W\"orter h\"oher. \textbf{Attention} ist der Schl\"usselpunkt f\"ur die Funktion der Transformer: Dadurch erhalten die Wortvektoren ihre eigentliche Kontextinformation.\\
+bezieht sich z.B. das Wort "`Der"' sowie das Adjektiv "`braune"' auf das Wort "`Hund"'. In dem Attention-Vektor w\"aren entsprechend die Werte f\"ur "`Hund"' in den Vektoren der beiden anderen W\"orter h\"oher. \textbf{Attention} ist der Schl\"usselpunkt f\"ur die Funktion der Transformer: Dadurch erhalten die Wortvektoren ihre eigentliche Kontextinformation. Um die Werte zu optimieren werden hier die Mittelwerte von acht Vektoren pro Wort ermittelt.\\
 Alle bisher errechneten Vektoren werden danach aufaddiert, normalisiert und jeder Vektor wird in ein Feed-Forward-Netz gegeben. Hierbei kann parallelisiert werden, da die einzelnen Vektoren voneinander unabh\"angig sind. Die Ausgabe des \textbf{Encoders} sind die mit Kontext und Attention encodierten Wortvektoren.\\
 %Decoder 
 Der \textbf{Decoder} ist \"ahnlich aufgebaut. Er nimmt einen zweiten Input an - der eigentliche Output bei Supervised Learning - der, wie Abbildung \ref{fig:attention} zeigt, zun\"achst auch in einen Eingabevektor mit Positionsinformation und Attention-Matrix umgewandelt wird. Im n\"achsten Schritt werden Input und Output gemeinsam in ein weiteres Netz zur Attention-Bestimmung gegeben, in dem die Attention Matrix der beiden Vektoren zueinander bestimmt wird: Die Frage die hierbei beantwortet wird ist, wie welche W\"orter in den beiden Sequenzen zueinander stehen. Dies ist gut an dem Beispiel der Sprach\"ubersetzung zu sehen, bei der der zu lernende Output der Input in einer anderen Sprache ist.
 \begin{verbatim} 
 The brown dog
 \end{verbatim} 
-w\"are entsprechend hier der Output. Es wird in diesem Schritt analysiert, wie das Wort "`The"' zu "`Der"', sowie "`braune"' zu "`brown"' und "`Hund"' zu "`dog"' steht.
+w\"are entsprechend hier der Output (Decoder Input). Es wird in diesem Schritt analysiert, wie das Wort "`The"' zu "`Der"', sowie "`braune"' zu "`brown"' und "`Hund"' zu "`dog"' steht.
 Diese Vektoren werden wieder aufaddiert, normiert und in ein Feed-Forward-Netz gegeben, um noch einmal addiert und normiert zu werden.\\
-Danach wird noch eine lineare und eine Softmax-Schicht angwandt.
+Danach wird noch eine lineare und eine Softmax-Schicht angwandt, um am Ende in diesem Beispiel das Wort zu erhalten, dass mit der h\"ochsten Wahrscheinlichkeit als n\"achstes in dem Output-Satz steht. In der Lernphase wird hierzu \textbf{Masking} genutzt, bei dem je ein Wort in dem zu lernenden Ouptut-Satz "`maskiert"', also als leerer Platzhalter markiert wird.
+
+\section{ELMo}
+
+
 \section{GPT}
 
 
-\section{ELMo}
 
 \section{BERT}
 %Unterschied zu anderen Modellen
