@@ -8,12 +8,12 @@ Das Ziel von Sprachmodellen ist es, parallele Verarbeitung der Daten m\"oglich z
 London - England + Spanien = Madrid
 \end{verbatim} 
 Mit ganzen Textsequenzen k\"onnen aber auch diese Vektor Embeddings aufgrund der fehlenden Kontextinformationen nur bedingt gut umgehen.
-%Transfer Learning
-%Sprachgmodelle geben word predictions aus
 
 \section{Problemstellung}
 Wie schon erw\"ahnt muss Sprache sequentiell versarbeitet werden. Dazu werden meist \textbf{Gated RNNs} und \textbf{Long Short Term Memory (LSTM)} - Netzwerke verwendet \cite{attention}. Durch einige Techniken kann man mit diesen Netzen auch gute Laufzeiten erreichen, aber es besteht ein weiteres Problem: Der Kontext der W\"orter geht schnell verloren, da diese Netze einem Wort meist auch nur eine Bedeutung zuordnen k\"onnen.Der Umstand, dass diese Netze f\"ur jede Anwendung spezifisch trainiert werden m\"ussen, macht ihren Einsatz sehr umst\"andlich.\\
-Ein ebenfalls sehr gro{\ss}es Problem in NLP ist die Tatsache, dass \textbf{\"Uberwachtes Lernen} mit erheblichem manuellen Aufwand - dem Annotieren und Labeln der Daten - verbunden ist. Es gibt zwar sehr gro{\ss}e Mengen an Daten, die durch das Internet verf\"ugbar sind (z.B. alle \textit{Wikipedia-Artikel}, diese eignen sich aber nur f\"ur un\"uberwachte Lernmethoden, da sie nicht gelabelt sind. Die Menge an gelabelten Daten hingegen ist verschwinden gering im Vergleich zu allen frei verf\"ugbaren. Dies legt die Entwicklung eines Systems nahe, das mit \textbf{teil-} oder \textbf{fern\"uberwachtem Lernen} auskommt. Heutige Sprachmodelle versuchen hier anzusetzen, indem sie in einem ersten Schritt un\"uberwacht mit Korpussen unterschiedlicher Gr\"o{\ss}e die Repr\"asentation einer Sprache lernen, um dann im zweiten Schritt an die zu erf\"ullende Aufgabe angepasst zu werden. Interessant hierbei sind neueste Entwicklungen \cite{gpt3}, durch die ein Modell sogar mit nur einem Beispiel der zu erf\"ullenden Aufgabe gute Ergebnisse erzielen kann.
+Ein ebenfalls sehr gro{\ss}es Problem in NLP ist die Tatsache, dass \textbf{\"Uberwachtes Lernen} mit erheblichem manuellen Aufwand - dem Annotieren und Labeln der Daten - verbunden ist. Es gibt zwar sehr gro{\ss}e Mengen an Daten, die durch das Internet verf\"ugbar sind (z.B. alle \textit{Wikipedia-Artikel}, diese eignen sich aber nur f\"ur un\"uberwachte Lernmethoden, da sie nicht gelabelt sind. Die Menge an gelabelten Daten hingegen ist verschwinden gering im Vergleich zu allen frei verf\"ugbaren. Dies legt die Entwicklung eines Systems nahe, das mit \textbf{teil-} oder \textbf{fern\"uberwachtem Lernen} auskommt. Heutige Sprachmodelle versuchen hier anzusetzen, indem sie in einem ersten Schritt un\"uberwacht mit Korpussen unterschiedlicher Gr\"o{\ss}e die Repr\"asentation einer Sprache lernen, um dann im zweiten Schritt an die zu erf\"ullende Aufgabe angepasst zu werden. Besonders interessant hierbei sind neueste Entwicklungen \cite{gpt3}, durch die ein Modell sogar mit nur einem Beispiel der zu erf\"ullenden Aufgabe gute Ergebnisse erzielen kann. Dieses Konzept nennt sich \textbf{Transfer Learning}.\\
+Das grunds\"atzliche Ziel von Sprachmodellen ist die Ausgabe des Wortes, das am wahrscheinlichsten auf eine Eingabesequenz folgt. Direkt anwendbar ist dies z.B. auf Textgeneration und \"Ubersetzungen, w\"ahrend f\"ur andere Aufgaben leichte \"Anderungen vorgenommen werden m\"ussen um z.B. f\"ur \textbf{Sentiment Analysis} eine Zahl zu erhalten, die dem in der Eingabe erkannten Sentiment entspricht. Sieht man diese Zahl als das vorrauszusagende Wort an k\"onnen diese \"Anderungen recht leicht umgesetzt werden.
+
 
 \section{Sprachmodelle auf Basis von LSTMs}
 \textbf{LSTMs} k\"onnen aufgrund ihrer Architektur gut mit kurzen S\"atzen umgehen, aber je l\"anger die Wortsequenz, desto schlechter kann sie verarbeitet werden: Es gibt dabei Probleme mit \textbf{vanishing} oder \textbf{exploding gradients}, je nach Einstellung der Parameter.\\
@@ -21,7 +21,21 @@ Durch die sequentiellen Verarbeitung steigt die Verarbeitungszeit mit der Textl\
 Trotz dieser Nachteile k\"onnen mit dieser Architektur f\"ur einige Anwendungen geeignete Sprachmodelle erstellt werden.
 
 \subsection{ELMo}
-Prinzipiell ist \textbf{ELMo} eher zu Wortvektoren zu z\"ahlen als zu Sprachmodellen. Die von \textbf{ELMo} erlernten Wort-Embeddings k\"onnen in den eigenen, f\"ur Aufgaben spezifisch entwickelten Netzen eingebunden werden, um gegen\"uber sehr festgelegter Vektoren wir \textbf{GloVe} Ergenisse zu erzielen, die zum Zeitpunkt der Entwicklung dieses Modells zu den besten geh\"orten. Sie wurden abgel\"ost durch die Einf\"uhrung der flexibleren Modelle wie \textbf{BERT}, die schnell bessere Ergebnisse erreichen konnten.
+\textbf{ELMo} baut auf der Idee der Wortvektoren oder auch \textbf{Word Embeddings} auf. Die von \textbf{ELMo} erlernten Wort-Embeddings k\"onnen in den eigenen, f\"ur Aufgaben spezifisch entwickelten Netzen eingebunden werden, um gegen\"uber sehr festgelegter Vektoren wir \textbf{GloVe} Ergenisse zu erzielen, die zum Zeitpunkt der Entwicklung dieses Modells zu den besten geh\"orten \cite{elmo}.\\
+\begin{figure}[!ht]
+\centering
+\includegraphics[height=5cm]{pics/elmo_layered_embeddings.png}
+\caption{Aufbau des ELMo-Modells \cite{elmoex}}
+\label{fig:elmo_layers}
+\end{figure}
+Die zweischichtige Architektur besteht aus jeweils einem \textbf{Feed-Forward} Netz, dessen Layer in Abbildung \ref{fig:elmo_layers} in rot eingezeichnet sind und einem \textbf{Feed-Backward} Netz, das in blau dargestellt ist. Damit ist \textbf{ELMo} ein sogenanntes \textbf{bidirektionales Sprachmodell}. Die Schichten bestehen aus jeweils 4096 LSTM-Zellen und zwischen den zwei Schichten gibt es eine Verbindung zur Eingabeschicht. Wie in der Abbildung zu sehen, gibt es demnach drei Repr\"asentationen f\"ur ein Wort, die zusammengenommen das ELMo Embedding ergeben.\\
+\begin{figure}[!ht]
+\centering
+\includegraphics[height=5cm]{pics/elmo_character_token.png}
+\caption{Vorverarbeitung der W\"orter \cite{elmoex}}
+\label{fig:elmo_character}
+\end{figure}
+Das erste Embedding der W\"orter entsteht schon vor dem eigentlichen Sprachmodell, wie Abbildung \ref{fig:elmo_character} zeigt. Die W\"orter werden in Character-Tokens aufgeteilt und in einem Convolutional Network mit 2048 Filtern und Max Pooling, gefolgt von einem zweischichtigen \textbf{Highway Netz} verarbeitet, bevor sie in das LSTM-Netz gegeben werden.
 
 \subsection{ULMFit}
 
@@ -50,8 +64,6 @@ The brown dog
 w\"are entsprechend hier der Output (Decoder Input). Es wird in diesem Schritt analysiert, wie das Wort "`The"' zu "`Der"', sowie "`braune"' zu "`brown"' und "`Hund"' zu "`dog"' steht.
 Diese Vektoren werden wieder aufaddiert, normiert und in ein Feed-Forward-Netz gegeben, um noch einmal addiert und normiert zu werden.\\
 Danach wird noch eine lineare und eine Softmax-Schicht angwandt, um am Ende in diesem Beispiel das Wort zu erhalten, dass mit der h\"ochsten Wahrscheinlichkeit als n\"achstes in dem Output-Satz steht. In der Lernphase wird hierzu \textbf{Masking} genutzt, bei dem je ein Wort in dem zu lernenden Ouptut-Satz "`maskiert"', also als leerer Platzhalter markiert wird.
-
-
 
 \subsection{GPT}
 
