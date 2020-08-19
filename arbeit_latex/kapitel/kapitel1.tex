@@ -35,12 +35,13 @@ Die zweischichtige Architektur besteht aus jeweils einem \textbf{Feed-Forward} N
 \caption{Vorverarbeitung der W\"orter \cite{elmoex}}
 \label{fig:elmo_character}
 \end{figure}
-Das erste Embedding der W\"orter entsteht schon vor dem eigentlichen Sprachmodell, wie Abbildung \ref{fig:elmo_character} zeigt. Die W\"orter werden in Character-Tokens aufgeteilt und in einem Convolutional Network mit 2048 Filtern und Max Pooling, gefolgt von einem zweischichtigen \textbf{Highway Netz} verarbeitet, bevor sie in das LSTM-Netz gegeben werden.
+Das erste Embedding der W\"orter entsteht schon vor dem eigentlichen Sprachmodell, wie Abbildung \ref{fig:elmo_character} zeigt. Die W\"orter werden in Character-Tokens aufgeteilt und in einem Convolutional Network mit 2048 Filtern und Max Pooling, gefolgt von einem zweischichtigen \textbf{Highway Netz} verarbeitet, bevor sie in das LSTM-Netz gegeben werden.\\
+Das Modell wurde mit dem 1B Word Benchmark trainiert, dass einen Korpus von 0,8 Milliarden W\"ortern besteht und ist damit ein insgesamt sehr gro{\ss}es Modell.
 
 \subsection{ULMFit}
 
 \section{Sprachmodelle auf Basis von Transformern}
-\textbf{Transformer} sind die Basis der heute meistgenutzten Sprachmodelle \cite{bert}\cite{gpt}. Sie wurden 2017 entwickelt, um das Problem der sequentiellen Verarbeitung zu l\"osen: Als Eingabe kann ein \textbf{Transformer} eine ganze Textsequenz verarbeiten. Die wichtigste Komponente in diesem System ist \textbf{Attention}: Dadurch kann einem Wort sein Kontext innerhalb der betrachteten Sequenz zugeordnet werden.\\
+\textbf{Transformer} sind die Basis der heute meistgenutzten Sprachmodelle \cite{bert}\cite{gpt}. Sie wurden 2017 entwickelt, um das Problem der sequentiellen Verarbeitung in Maschineller \"Ubersetzung zu l\"osen: Als Eingabe kann ein \textbf{Transformer} eine ganze Textsequenz verarbeiten. Die wichtigste Komponente in diesem System ist \textbf{Attention}: Dadurch kann einem Wort sein Kontext innerhalb der betrachteten Sequenz zugeordnet werden.\\
 \begin{figure}[!ht]
 \centering
 \includegraphics{pics/attention.jpg}
@@ -66,12 +67,20 @@ Diese Vektoren werden wieder aufaddiert, normiert und in ein Feed-Forward-Netz g
 Danach wird noch eine lineare und eine Softmax-Schicht angwandt, um am Ende in diesem Beispiel das Wort zu erhalten, dass mit der h\"ochsten Wahrscheinlichkeit als n\"achstes in dem Output-Satz steht. In der Lernphase wird hierzu \textbf{Masking} genutzt, bei dem je ein Wort in dem zu lernenden Ouptut-Satz "`maskiert"', also als leerer Platzhalter markiert wird.
 
 \subsection{GPT}
-
+OpenAI hat mit \textbf{Generative Pretraining} f\"ur Sprachmodelle bis zum Zeitpunkt dieser Arbeit drei Hauptversionen von \textbf{GPT} ver\"offentlicht \cite{gpt}\cite{gpt2}\cite{gpt3}. Die Sprachmodelle nutzen den \textbf{Decoder}-Teil des Transformers, um ein \textbf{autoregressives} System zu erzeugen: Wie in Sprachmodellen \"ublich wird das jeweils wahrscheinlichste n\"achste Wort ausgegeben und danach der entstehende Satz weiter als Input genutzt.\\
+%elaborieren, Abbildung hierzu
+Das urspr\"ungliche \textbf{GPT}-Modell besteht aus 12 solcher Decoder-Bl\"ocke, die hintereinander durchgangen werden. Die folgenden Modelle bieten auch jeweils eine Version mit 12 Decodern, dies ist aber immer die kleinste Version. Die gr\"o{\ss}te Version von \textbf{GPT-2 } umschlie{\ss}t 48 Decoder-Schichten, w\"ahrend \textbf{GPT-3} bis 96 Schichten hat. Das momentan gr\"o{\ss}te GPT-Modell hat somit mit Decoder-Parametern und eigenen Parametern f\"ur Positional Encoding und Embedding 175 Milliarden Parameter, ein gro{\ss}er Schritt nach den 1,5 Milliarden von \textbf{GPT-2}.\\
+Der weitere Unterschied dieser Modelle sind die genutzten Trainingsdaten: Das erste Modell wurde mit verschiedenen Datensets trainiert, die zusammen eine Gr\"o{\ss} von knapp \"uber 15GB erreichen, darunter die 1B Word Benchmark und PG-19. F\"ur \textbf{GPT-2} wurden ca. 40GB Daten genutzt, enthalten in dem Datensatz \textbf{WebText}, der f\"ur diese Aufgabe erstellt wurde. Die f\"ur \textbf{GPT-3} verwendeten Daten hingegen umfassen \"uber 500GB alleine mit dem genutzten Teil des \textbf{CommonCrawl} Datensatzes, der Texte aus dem Internet von 2016 bis 2019 enth\"alt und auf Duplikate \"uberpr\"uft wurde. Weiterhin wurden das eigene \textbf{WebText2} und die Datens\"atze \textbf{Books1}, \textbf{Books2} und das englischsprachige Wikipedia. Die Batchsize dieses Modells ist 0,5 Millionen. Das Modell \"ubertrifft damit an Gr\"o{\ss}e bei Weitem das, was bis zu seiner Ver\"offentlichung vorhanden war. Es ist ein Meilenstein f\"ur teil\"uberwachtes und auch un\"uberwachtes Lernen: \textbf{GPT-3} kann Aufgaben teilweise im Ansatz l\"osen, ohne Beispiele gesehen zu haben oder auch f\"ur diese Aufgabe gelernt zu haben. Besser funktioniert aber die \textbf{Few-Shot}-Technik: Man zeigt dem Modell eine gewisse Anzahl (unterer zweistelliger Bereich oder weniger) an Beispielen der Aufgabe, die gel\"ost werden soll und fragt danach ab. Dies ist aufgrund der wenig vorhandenen gelabelten Datens\"atze ein gro{\ss}er Vorteil dieses Modells.\\
+%Beispiele Prompts
+%Input, Output erklären
+Wichtig zu beachten ist, dass diese Modelle aufgrund der Qualit\"at der generierten Texte, die gr\"o{\ss}tenteils nicht mehr von von Menschen geschriebenen zu unterscheiden sind, auch gewisse Risiken bergen \cite{gpt3}: Es ist deutlich einfacher, damit Fake News und Fehlinformationen zu generieren und zu verbreiten.
 
 
 \subsection{BERT}
 %Unterschied zu anderen Modellen
 %verschiedene Trainingsmethoden
+
+\subsection{RoBERTa}
 
 \section{Weitere Sprachmodelle}
 
