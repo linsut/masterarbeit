@@ -9,45 +9,79 @@ London - England + Spanien = Madrid
 \end{verbatim} 
 Mit ganzen Textsequenzen k\"onnen aber auch diese Vektor Embeddings aufgrund der fehlenden Kontextinformationen nur bedingt gut umgehen.
 
+\section{Problemstellung}
+Wie schon erw\"ahnt muss Sprache sequentiell versarbeitet werden. Dazu werden meist \textbf{Gated RNNs} und \textbf{Long Short Term Memory (LSTM)} - Netzwerke verwendet \cite{attention}. Durch einige Techniken kann man mit diesen Netzen auch gute Laufzeiten erreichen, aber es besteht ein weiteres Problem: Der Kontext der W\"orter geht schnell verloren, da diese Netze einem Wort meist auch nur eine Bedeutung zuordnen k\"onnen.Der Umstand, dass diese Netze f\"ur jede Anwendung spezifisch trainiert werden m\"ussen, macht ihren Einsatz sehr umst\"andlich.\\
+Ein ebenfalls sehr gro{\ss}es Problem in NLP ist die Tatsache, dass \textbf{\"Uberwachtes Lernen} mit erheblichem manuellen Aufwand - dem Annotieren und Labeln der Daten - verbunden ist. Es gibt zwar sehr gro{\ss}e Mengen an Daten, die durch das Internet verf\"ugbar sind (z.B. alle \textit{Wikipedia-Artikel}, diese eignen sich aber nur f\"ur un\"uberwachte Lernmethoden, da sie nicht gelabelt sind. Die Menge an gelabelten Daten hingegen ist verschwinden gering im Vergleich zu allen frei verf\"ugbaren. Dies legt die Entwicklung eines Systems nahe, das mit \textbf{teil-} oder \textbf{fern\"uberwachtem Lernen} auskommt. Heutige Sprachmodelle versuchen hier anzusetzen, indem sie in einem ersten Schritt un\"uberwacht mit Korpussen unterschiedlicher Gr\"o{\ss}e die Repr\"asentation einer Sprache lernen, um dann im zweiten Schritt an die zu erf\"ullende Aufgabe angepasst zu werden. Besonders interessant hierbei sind neueste Entwicklungen \cite{gpt3}, durch die ein Modell sogar mit nur einem Beispiel der zu erf\"ullenden Aufgabe gute Ergebnisse erzielen kann. Dieses Konzept nennt sich \textbf{Transfer Learning}.\\
+Das grunds\"atzliche Ziel von Sprachmodellen ist die Ausgabe des Wortes, das am wahrscheinlichsten auf eine Eingabesequenz folgt. Direkt anwendbar ist dies z.B. auf Textgeneration und \"Ubersetzungen, w\"ahrend f\"ur andere Aufgaben leichte \"Anderungen vorgenommen werden m\"ussen um z.B. f\"ur \textbf{Sentiment Analysis} eine Zahl zu erhalten, die dem in der Eingabe erkannten Sentiment entspricht. Sieht man diese Zahl als das vorrauszusagende Wort an k\"onnen diese \"Anderungen recht leicht umgesetzt werden.
 
-\section{Vergleich zu anderen Ans\"atzen}
-Wie schon erw\"ahnt muss Sprache sequentiell versarbeitet werden. Dazu werden meist \textbf{Gated RNNs} und \textbf{Long Short Term Memory (LSTM)} - Netzwerke verwendet \cite{attention}. Durch einige Techniken kann man mit diesen Netzen auch gute Laufzeiten erreichen, aber es besteht ein weiteres Problem: Der Kontext der W\"orter geht verloren. Zwar k\"onnen \textbf{LSTMs} gut mit kurzen S\"atzen umgehen, aber je l\"anger die Wortsequenz, desto schlechter kann sie verarbeitet werden: Es gibt dabei Probleme mit \textbf{vanishing} oder \textbf{exploding gradients}, je nach Einstellung der Parameter.\\
-Durch die sequentiellen Verarbeitung steigt auch die Verarbeitungszeit mit der Textl\"ange an, wobei \textbf{LSTMs} generell langsamer sind als \textbf{RNNs}, da die Neuronen komplexer sind.\\
-Der Umstand, dass diese Netze f\"ur jede Anwendung spezifisch trainiert werden m\"ussen, macht ihren Einsatz sehr umst\"andlich. Sprachmodelle hingegen sind vortrainiert, sie brauchen nur eine geringe Anzahl Daten und damit auch wenig Zeit, um f\"ur verschiedene Anwendungen einsatzbereit zu sein.
 
+\section{Sprachmodelle auf Basis von LSTMs}
+\textbf{LSTMs} k\"onnen aufgrund ihrer Architektur gut mit kurzen S\"atzen umgehen, aber je l\"anger die Wortsequenz, desto schlechter kann sie verarbeitet werden: Es gibt dabei Probleme mit \textbf{vanishing} oder \textbf{exploding gradients}, je nach Einstellung der Parameter.\\
+Durch die sequentiellen Verarbeitung steigt die Verarbeitungszeit mit der Textl\"ange an, wodurch \textbf{LSTMs} generell langsamer sind als \textbf{RNNs}, da die Neuronen komplexer sind.\\
+Trotz dieser Nachteile k\"onnen mit dieser Architektur f\"ur einige Anwendungen geeignete Sprachmodelle erstellt werden.
 
-\section{Transformer}
-\textbf{Transformer} sind die Basis vieler der heutigen Sprachmodelle \cite{bert}\cite{gpt}. Sie wurden 2017 entwickelt, um das Problem der sequentiellen Verarbeitung zu l\"osen: Als Eingabe kann ein \textbf{Transformer} eine ganze Textsequenz verarbeiten.\\
+\subsection{ELMo}
+\textbf{ELMo} baut auf der Idee der Wortvektoren oder auch \textbf{Word Embeddings} auf. Die von \textbf{ELMo} erlernten Wort-Embeddings k\"onnen in den eigenen, f\"ur Aufgaben spezifisch entwickelten Netzen eingebunden werden, um gegen\"uber sehr festgelegter Vektoren wir \textbf{GloVe} Ergenisse zu erzielen, die zum Zeitpunkt der Entwicklung dieses Modells zu den besten geh\"orten \cite{elmo}.\\
+\begin{figure}[!ht]
+\centering
+\includegraphics[height=5cm]{pics/elmo_layered_embeddings.png}
+\caption{Aufbau des ELMo-Modells \cite{elmoex}}
+\label{fig:elmo_layers}
+\end{figure}
+Die zweischichtige Architektur besteht aus jeweils einem \textbf{Feed-Forward} Netz, dessen Layer in Abbildung \ref{fig:elmo_layers} in rot eingezeichnet sind und einem \textbf{Feed-Backward} Netz, das in blau dargestellt ist. Damit ist \textbf{ELMo} ein sogenanntes \textbf{bidirektionales Sprachmodell}. Die Schichten bestehen aus jeweils 4096 LSTM-Zellen und zwischen den zwei Schichten gibt es eine Verbindung zur Eingabeschicht. Wie in der Abbildung zu sehen, gibt es demnach drei Repr\"asentationen f\"ur ein Wort, die zusammengenommen das ELMo Embedding ergeben.\\
+\begin{figure}[!ht]
+\centering
+\includegraphics[height=5cm]{pics/elmo_character_token.png}
+\caption{Vorverarbeitung der W\"orter \cite{elmoex}}
+\label{fig:elmo_character}
+\end{figure}
+Das erste Embedding der W\"orter entsteht schon vor dem eigentlichen Sprachmodell, wie Abbildung \ref{fig:elmo_character} zeigt. Die W\"orter werden in Character-Tokens aufgeteilt und in einem Convolutional Network mit 2048 Filtern und Max Pooling, gefolgt von einem zweischichtigen \textbf{Highway Netz} verarbeitet, bevor sie in das LSTM-Netz gegeben werden.\\
+Das Modell wurde mit dem 1B Word Benchmark trainiert, dass einen Korpus von 0,8 Milliarden W\"ortern besteht und ist damit ein insgesamt sehr gro{\ss}es Modell.
+
+\subsection{ULMFit}
+
+\section{Sprachmodelle auf Basis von Transformern}
+\textbf{Transformer} sind die Basis der heute meistgenutzten Sprachmodelle \cite{bert}\cite{gpt}. Sie wurden 2017 entwickelt, um das Problem der sequentiellen Verarbeitung in Maschineller \"Ubersetzung zu l\"osen: Als Eingabe kann ein \textbf{Transformer} eine ganze Textsequenz verarbeiten. Die wichtigste Komponente in diesem System ist \textbf{Attention}: Dadurch kann einem Wort sein Kontext innerhalb der betrachteten Sequenz zugeordnet werden.\\
 \begin{figure}[!ht]
 \centering
 \includegraphics{pics/attention.jpg}
 \caption{Aufbau eines Transformers \cite{attention}}
 \label{fig:attention}
 \end{figure}
-%Encoder
+
+\subsection*{Encoder}
 Wie in Abbildung \ref{fig:attention} zu sehen, wird die Eingabe zun\"achst in Wortvektoren f\"ur jedes Eingabewort umgewandelt, die sich aus der Addition des Vektors im \textbf{Embedding Space} mit einem \textbf{Positionsvektor (Positional Encoding)}, der die Position des Wortes im Satz enth\"alt, ergibt. Der Positionsvektor wird durch Sinus- und Kosinusfunktionen bestimmt. Dieser Eingabevektor wird an einen \textbf{Encoder} weitergegeben, der eine \textbf{Attention-Matrix} f\"ur die Eingabesequenz erstellt. Sie besteht aus einem Vektor der L\"ange der Textsequenz f\"ur jedes Wort. Diese Matrix enth\"alt Informationen dar\"uber, wie relevant die einzelnen W\"orter der Sequenz f\"ureinander sind: In dem Satz
 \begin{verbatim} 
 Der braune Hund
 \end{verbatim} 
-bezieht sich z.B. das Wort "`Der"' sowie das Adjektiv "`braune"' auf das Wort "`Hund"'. In dem Attention-Vektor w\"aren entsprechend die Werte f\"ur "`Hund"' in den Vektoren der beiden anderen W\"orter h\"oher. \textbf{Attention} ist der Schl\"usselpunkt f\"ur die Funktion der Transformer: Dadurch erhalten die Wortvektoren ihre eigentliche Kontextinformation.\\
+bezieht sich z.B. das Wort "`Der"' sowie das Adjektiv "`braune"' auf das Wort "`Hund"'. In dem Attention-Vektor w\"aren entsprechend die Werte f\"ur "`Hund"' in den Vektoren der beiden anderen W\"orter h\"oher. \textbf{Attention} ist der Schl\"usselpunkt f\"ur die Funktion der Transformer: Dadurch erhalten die Wortvektoren ihre eigentliche Kontextinformation. Um die Werte zu optimieren werden hier die Mittelwerte von acht Vektoren pro Wort ermittelt.\\
 Alle bisher errechneten Vektoren werden danach aufaddiert, normalisiert und jeder Vektor wird in ein Feed-Forward-Netz gegeben. Hierbei kann parallelisiert werden, da die einzelnen Vektoren voneinander unabh\"angig sind. Die Ausgabe des \textbf{Encoders} sind die mit Kontext und Attention encodierten Wortvektoren.\\
-%Decoder 
+
+\subsection*{Decoder}
 Der \textbf{Decoder} ist \"ahnlich aufgebaut. Er nimmt einen zweiten Input an - der eigentliche Output bei Supervised Learning - der, wie Abbildung \ref{fig:attention} zeigt, zun\"achst auch in einen Eingabevektor mit Positionsinformation und Attention-Matrix umgewandelt wird. Im n\"achsten Schritt werden Input und Output gemeinsam in ein weiteres Netz zur Attention-Bestimmung gegeben, in dem die Attention Matrix der beiden Vektoren zueinander bestimmt wird: Die Frage die hierbei beantwortet wird ist, wie welche W\"orter in den beiden Sequenzen zueinander stehen. Dies ist gut an dem Beispiel der Sprach\"ubersetzung zu sehen, bei der der zu lernende Output der Input in einer anderen Sprache ist.
 \begin{verbatim} 
 The brown dog
 \end{verbatim} 
-w\"are entsprechend hier der Output. Es wird in diesem Schritt analysiert, wie das Wort "`The"' zu "`Der"', sowie "`braune"' zu "`brown"' und "`Hund"' zu "`dog"' steht.
+w\"are entsprechend hier der Output (Decoder Input). Es wird in diesem Schritt analysiert, wie das Wort "`The"' zu "`Der"', sowie "`braune"' zu "`brown"' und "`Hund"' zu "`dog"' steht.
 Diese Vektoren werden wieder aufaddiert, normiert und in ein Feed-Forward-Netz gegeben, um noch einmal addiert und normiert zu werden.\\
-Danach wird noch eine lineare und eine Softmax-Schicht angwandt.
-\section{GPT}
+Danach wird noch eine lineare und eine Softmax-Schicht angwandt, um am Ende in diesem Beispiel das Wort zu erhalten, dass mit der h\"ochsten Wahrscheinlichkeit als n\"achstes in dem Output-Satz steht. In der Lernphase wird hierzu \textbf{Masking} genutzt, bei dem je ein Wort in dem zu lernenden Ouptut-Satz "`maskiert"', also als leerer Platzhalter markiert wird.
+
+\subsection{GPT}
+OpenAI hat mit \textbf{Generative Pretraining} f\"ur Sprachmodelle bis zum Zeitpunkt dieser Arbeit drei Hauptversionen von \textbf{GPT} ver\"offentlicht \cite{gpt}\cite{gpt2}\cite{gpt3}. Die Sprachmodelle nutzen den \textbf{Decoder}-Teil des Transformers, um ein \textbf{autoregressives} System zu erzeugen: Wie in Sprachmodellen \"ublich wird das jeweils wahrscheinlichste n\"achste Wort ausgegeben und danach der entstehende Satz weiter als Input genutzt.\\
+%elaborieren, Abbildung hierzu
+Das urspr\"ungliche \textbf{GPT}-Modell besteht aus 12 solcher Decoder-Bl\"ocke, die hintereinander durchgangen werden. Die folgenden Modelle bieten auch jeweils eine Version mit 12 Decodern, dies ist aber immer die kleinste Version. Die gr\"o{\ss}te Version von \textbf{GPT-2 } umschlie{\ss}t 48 Decoder-Schichten, w\"ahrend \textbf{GPT-3} bis 96 Schichten hat. Das momentan gr\"o{\ss}te GPT-Modell hat somit mit Decoder-Parametern und eigenen Parametern f\"ur Positional Encoding und Embedding 175 Milliarden Parameter, ein gro{\ss}er Schritt nach den 1,5 Milliarden von \textbf{GPT-2}.\\
+Der weitere Unterschied dieser Modelle sind die genutzten Trainingsdaten: Das erste Modell wurde mit verschiedenen Datensets trainiert, die zusammen eine Gr\"o{\ss} von knapp \"uber 15GB erreichen, darunter die 1B Word Benchmark und PG-19. F\"ur \textbf{GPT-2} wurden ca. 40GB Daten genutzt, enthalten in dem Datensatz \textbf{WebText}, der f\"ur diese Aufgabe erstellt wurde. Die f\"ur \textbf{GPT-3} verwendeten Daten hingegen umfassen \"uber 500GB alleine mit dem genutzten Teil des \textbf{CommonCrawl} Datensatzes, der Texte aus dem Internet von 2016 bis 2019 enth\"alt und auf Duplikate \"uberpr\"uft wurde. Weiterhin wurden das eigene \textbf{WebText2} und die Datens\"atze \textbf{Books1}, \textbf{Books2} und das englischsprachige Wikipedia. Die Batchsize dieses Modells ist 0,5 Millionen. Das Modell \"ubertrifft damit an Gr\"o{\ss}e bei Weitem das, was bis zu seiner Ver\"offentlichung vorhanden war. Es ist ein Meilenstein f\"ur teil\"uberwachtes und auch un\"uberwachtes Lernen: \textbf{GPT-3} kann Aufgaben teilweise im Ansatz l\"osen, ohne Beispiele gesehen zu haben oder auch f\"ur diese Aufgabe gelernt zu haben. Besser funktioniert aber die \textbf{Few-Shot}-Technik: Man zeigt dem Modell eine gewisse Anzahl (unterer zweistelliger Bereich oder weniger) an Beispielen der Aufgabe, die gel\"ost werden soll und fragt danach ab. Dies ist aufgrund der wenig vorhandenen gelabelten Datens\"atze ein gro{\ss}er Vorteil dieses Modells.\\
+%Beispiele Prompts
+%Input, Output erklären
+Wichtig zu beachten ist, dass diese Modelle aufgrund der Qualit\"at der generierten Texte, die gr\"o{\ss}tenteils nicht mehr von von Menschen geschriebenen zu unterscheiden sind, auch gewisse Risiken bergen \cite{gpt3}: Es ist deutlich einfacher, damit Fake News und Fehlinformationen zu generieren und zu verbreiten.
 
 
-\section{ELMo}
-
-\section{BERT}
+\subsection{BERT}
 %Unterschied zu anderen Modellen
 %verschiedene Trainingsmethoden
 
+\subsection{RoBERTa}
 
-\section{ULMFit}
-%Unterschied zu anderen Modellen
+\section{Weitere Sprachmodelle}
+
+\subsection{XLNet}
