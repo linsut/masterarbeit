@@ -69,12 +69,29 @@ Diese Vektoren werden wieder aufaddiert, normiert und in ein Feed-Forward-Netz g
 Danach wird noch eine lineare und eine Softmax-Schicht angwandt, um am Ende in diesem Beispiel das Wort zu erhalten, dass mit der h\"ochsten Wahrscheinlichkeit als n\"achstes in dem Output-Satz steht. In der Lernphase wird hierzu \textbf{Masking} genutzt, bei dem je ein Wort in dem zu lernenden Ouptut-Satz "`maskiert"', also als leerer Platzhalter markiert wird.
 
 \subsection{GPT}
-OpenAI hat mit \textbf{Generative Pretraining} f\"ur Sprachmodelle bis zum Zeitpunkt dieser Arbeit drei Hauptversionen von \textbf{GPT} ver\"offentlicht \cite{gpt}\cite{gpt2}\cite{gpt3}. Die Sprachmodelle nutzen den \textbf{Decoder}-Teil des Transformers, um ein \textbf{autoregressives} System zu erzeugen: Wie in Sprachmodellen \"ublich wird das jeweils wahrscheinlichste n\"achste Wort ausgegeben und danach der entstehende Satz weiter als Input genutzt.\\
-% elaborieren, Abbildung hierzu (eigene erstellte?)
+OpenAI hat mit \textbf{Generative Pretraining} f\"ur Sprachmodelle bis zum Zeitpunkt dieser Arbeit drei Hauptversionen von \textbf{GPT} ver\"offentlicht \cite{gpt}\cite{gpt2}\cite{gpt3}. Die Sprachmodelle nutzen den \textbf{Decoder}-Teil des Transformers, um ein \textbf{autoregressives} System zu erzeugen: Wie in Sprachmodellen \"ublich wird das jeweils wahrscheinlichste n\"achste Wort ausgegeben und danach der entstehende Satz weiter als Input genutzt, wie in Abbildung \ref{fig:autoregressive} zu sehen ist.\\
+\begin{figure}[!ht]
+\centering
+\includegraphics[height=5cm]{pics/autoregressives_modell.png}
+\caption{Konzept eines autoregressiven Modells}
+\label{fig:autoregressive}
+\end{figure}
 Das urspr\"ungliche \textbf{GPT}-Modell besteht aus 12 solcher Decoder-Bl\"ocke, die hintereinander durchgangen werden. Die folgenden Modelle bieten auch jeweils eine Version mit 12 Decodern, dies ist aber immer die kleinste Version. Die gr\"o{\ss}te Version von \textbf{GPT-2 } umschlie{\ss}t 48 Decoder-Schichten, w\"ahrend \textbf{GPT-3} bis 96 Schichten hat. Das momentan gr\"o{\ss}te GPT-Modell hat somit mit Decoder-Parametern und eigenen Parametern f\"ur Positional Encoding und Embedding 175 Milliarden Parameter, ein gro{\ss}er Schritt nach den 1,5 Milliarden von \textbf{GPT-2}.\\
 Der weitere Unterschied dieser Modelle sind die genutzten Trainingsdaten: Das erste Modell wurde mit verschiedenen Datensets trainiert, die zusammen eine Gr\"o{\ss} von knapp \"uber 15GB erreichen, darunter die 1B Word Benchmark und PG-19. F\"ur \textbf{GPT-2} wurden ca. 40GB Daten genutzt, enthalten in dem Datensatz \textbf{WebText}, der f\"ur diese Aufgabe erstellt wurde. Die f\"ur \textbf{GPT-3} verwendeten Daten hingegen umfassen \"uber 500GB alleine mit dem genutzten Teil des \textbf{CommonCrawl} Datensatzes, der Texte aus dem Internet von 2016 bis 2019 enth\"alt und auf Duplikate \"uberpr\"uft wurde. Weiterhin wurden das eigene \textbf{WebText2} und die Datens\"atze \textbf{Books1}, \textbf{Books2} und das englischsprachige Wikipedia. Die Batchsize dieses Modells ist 0,5 Millionen. Das Modell \"ubertrifft damit an Gr\"o{\ss}e bei Weitem das, was bis zu seiner Ver\"offentlichung vorhanden war. Es ist ein Meilenstein f\"ur teil\"uberwachtes und auch un\"uberwachtes Lernen: \textbf{GPT-3} kann Aufgaben teilweise im Ansatz l\"osen, ohne Beispiele gesehen zu haben oder auch f\"ur diese Aufgabe gelernt zu haben. Besser funktioniert aber die \textbf{Few-Shot}-Technik: Man zeigt dem Modell eine gewisse Anzahl (unterer zweistelliger Bereich oder weniger) an Beispielen der Aufgabe, die gel\"ost werden soll und fragt danach ab. Dies ist aufgrund der wenig vorhandenen gelabelten Datens\"atze ein gro{\ss}er Vorteil dieses Modells.\\
-% Beispiele Prompts
-% Input, Output erklären
+\textbf{GPT} arbeitet als Input mit sogenannten \textbf{Kontexten}: Dazu geh\"oren hier die Beschreibung der zu erf\"ullenden Aufgabe, eventuelle Beispiele und der \textbf{Prompt}, der dazu auffordert, die Aufgabe mit dem Prompt als Input zu l\"osen. Ein Beispiel f\"ur einen Kontext ist \cite{gpt3}:
+\begin{verbatim} 
+A "whatpu" is a small, furry animal native to Tanzania. 
+An example of a sentence that uses the word whatpu is:
+We were traveling in Africa and we saw these very cute whatpus.
+To do a "farduddle" means to jump up and down really fast. 
+An example of a sentence that uses the word farduddle is:
+\end{verbatim} 
+Diese Aufgaben und S\"atze sind von Menschen geschrieben als Input an das \textbf{GPT}-Modell gegeben worden. Die in Anf\"uhrungszeichen stehenden W\"orter sind frei erfunden, um zu zeigen, wie das Sprachmodell mit neuen W\"ortern umgeht. Der von \textbf{GPT} generierte Output ist:
+\begin{verbatim} 
+One day when I was playing tag with my little sister, she got  
+really excited and she started doing these crazy farduddles.
+\end{verbatim} 
+Viel Feinabstimmung braucht \textbf{GPT-3} damit nicht mehr, was einer enormen Zeitersparnis entspricht. Die Vorg\"angermodelle sowie auch \textbf{GPT-3} f\"ur bessere Ergebnisse sollten jedoch mit einem \"uberwachten Trainingsschritt fein abgestimmt werden.\\
 Wichtig zu beachten ist, dass diese Modelle aufgrund der Qualit\"at der generierten Texte, die gr\"o{\ss}tenteils nicht mehr von von Menschen geschriebenen zu unterscheiden sind, auch gewisse Risiken bergen \cite{gpt3}: Es ist deutlich einfacher, damit Fake News und Fehlinformationen zu generieren und zu verbreiten.
 
 
