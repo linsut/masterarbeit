@@ -9,10 +9,13 @@ London - England + Spanien = Madrid
 \end{verbatim} 
 Mit ganzen Textsequenzen k\"onnen aber auch diese Vektor Embeddings aufgrund der fehlenden Kontextinformationen nur bedingt gut umgehen.
 
+
+
 \section{Problemstellung}
 Wie schon erw\"ahnt muss Sprache sequentiell versarbeitet werden. Dazu werden meist \textbf{Gated RNNs} und \textbf{Long Short Term Memory (LSTM)} - Netzwerke verwendet \cite{attention}. Durch einige Techniken kann man mit diesen Netzen auch gute Laufzeiten erreichen, aber es besteht ein weiteres Problem: Der Kontext der W\"orter geht schnell verloren, da diese Netze einem Wort meist auch nur eine Bedeutung zuordnen k\"onnen.Der Umstand, dass diese Netze f\"ur jede Anwendung spezifisch trainiert werden m\"ussen, macht ihren Einsatz sehr umst\"andlich.\\
 Ein ebenfalls sehr gro{\ss}es Problem in NLP ist die Tatsache, dass \textbf{\"Uberwachtes Lernen} mit erheblichem manuellen Aufwand - dem Annotieren und Labeln der Daten - verbunden ist. Es gibt zwar sehr gro{\ss}e Mengen an Daten, die durch das Internet verf\"ugbar sind (z.B. alle \textit{Wikipedia-Artikel}, diese eignen sich aber nur f\"ur un\"uberwachte Lernmethoden, da sie nicht gelabelt sind. Die Menge an gelabelten Daten hingegen ist verschwinden gering im Vergleich zu allen frei verf\"ugbaren. Dies legt die Entwicklung eines Systems nahe, das mit \textbf{teil-} oder \textbf{fern\"uberwachtem Lernen} auskommt. Heutige Sprachmodelle versuchen hier anzusetzen, indem sie in einem ersten Schritt un\"uberwacht mit Korpussen unterschiedlicher Gr\"o{\ss}e die Repr\"asentation einer Sprache lernen, um dann im zweiten Schritt an die zu erf\"ullende Aufgabe angepasst zu werden. Besonders interessant hierbei sind neueste Entwicklungen \cite{gpt3}, durch die ein Modell sogar mit nur einem Beispiel der zu erf\"ullenden Aufgabe gute Ergebnisse erzielen kann. Dieses Konzept nennt sich \textbf{Transfer Learning}, durch Anwendung in der Bildverarbeitung konnten dadurch gro{\ss}e Verbesserungen in Zeit und Genauigkeit erreicht werden \cite{ulm}, da ein vortrainiertes Modell nur noch mit Feinabstimmungen f\"ur die sp\"atere Aufgabe vorbereitet werden muss.\\
 Das grunds\"atzliche Ziel von Sprachmodellen ist die Ausgabe des Wortes, das am wahrscheinlichsten auf eine Eingabesequenz folgt. Direkt anwendbar ist dies z.B. auf Textgeneration und \"Ubersetzungen, w\"ahrend f\"ur andere Aufgaben leichte \"Anderungen vorgenommen werden m\"ussen um z.B. f\"ur \textbf{Sentiment Analysis} eine Zahl zu erhalten, die dem in der Eingabe erkannten Sentiment entspricht. Sieht man diese Zahl als das vorrauszusagende Wort an k\"onnen diese \"Anderungen recht leicht umgesetzt werden.
+
 
 
 \section{Sprachmodelle auf Basis von LSTMs}
@@ -20,15 +23,21 @@ Das grunds\"atzliche Ziel von Sprachmodellen ist die Ausgabe des Wortes, das am 
 Durch die sequentiellen Verarbeitung steigt die Verarbeitungszeit mit der Textl\"ange an, wodurch \textbf{LSTMs} generell langsamer sind als \textbf{RNNs}, da die Neuronen komplexer sind.\\
 Trotz dieser Nachteile k\"onnen mit dieser Architektur f\"ur einige Anwendungen geeignete Sprachmodelle erstellt werden.
 
+
 \subsection{ELMo}
 \textbf{ELMo} baut auf der Idee der Wortvektoren oder auch \textbf{Word Embeddings} auf. Die von \textbf{ELMo} erlernten Wort-Embeddings k\"onnen in den eigenen, f\"ur Aufgaben spezifisch entwickelten Netzen eingebunden werden, um gegen\"uber sehr festgelegter Vektoren wir \textbf{GloVe} Ergenisse zu erzielen, die zum Zeitpunkt der Entwicklung dieses Modells zu den besten geh\"orten \cite{elmo}.\\
+
+\textbf{Architektur}\\
 \begin{figure}[!ht]
 \centering
 \includegraphics[height=5cm]{pics/elmo_layered_embeddings.png}
 \caption{Aufbau des ELMo-Modells \cite{elmoex}}
 \label{fig:elmo_layers}
 \end{figure}
-Die zweischichtige Architektur besteht aus jeweils einem \textbf{Feed-Forward} Netz, dessen Layer in Abbildung \ref{fig:elmo_layers} in rot eingezeichnet sind und einem \textbf{Feed-Backward} Netz, das in blau dargestellt ist. Damit ist \textbf{ELMo} ein sogenanntes \textbf{bidirektionales Sprachmodell}. Die Schichten bestehen aus jeweils 4096 LSTM-Zellen und zwischen den zwei Schichten gibt es eine Verbindung zur Eingabeschicht. Wie in der Abbildung zu sehen, gibt es demnach drei Repr\"asentationen f\"ur ein Wort, die zusammengenommen das ELMo Embedding ergeben.\\
+Die zweischichtige Architektur besteht aus jeweils einem \textbf{Feed-Forward} Netz, dessen Layer in Abbildung \ref{fig:elmo_layers} in rot eingezeichnet sind und einem \textbf{Feed-Backward} Netz, das in blau dargestellt ist. Damit ist \textbf{ELMo} ein sogenanntes \textbf{bidirektionales Sprachmodell}. Die Schichten bestehen aus jeweils 4096 LSTM-Zellen und zwischen den zwei Schichten gibt es eine Verbindung zur Eingabeschicht.\\
+
+\textbf{Input und Output}\\
+Wie in der Abbildung \ref{fig:elmo_layers} zu sehen, gibt es drei Repr\"asentationen f\"ur ein Wort, eine in jeder Schicht. Zusammengenommen ergeben sie das ELMo Embedding.
 \begin{figure}[!ht]
 \centering
 \includegraphics[height=5cm]{pics/elmo_character_token.png}
@@ -36,10 +45,15 @@ Die zweischichtige Architektur besteht aus jeweils einem \textbf{Feed-Forward} N
 \label{fig:elmo_character}
 \end{figure}
 Das erste Embedding der W\"orter entsteht schon vor dem eigentlichen Sprachmodell, wie Abbildung \ref{fig:elmo_character} zeigt. Die W\"orter werden in Character-Tokens aufgeteilt und in einem Convolutional Network mit 2048 Filtern und Max Pooling, gefolgt von einem zweischichtigen \textbf{Highway Netz} verarbeitet, bevor sie in das LSTM-Netz gegeben werden.\\
+
+\textbf{Trainingdaten}\\
 Das Modell wurde mit dem 1B Word Benchmark trainiert, dass einen Korpus von 0,8 Milliarden W\"ortern besteht und ist damit ein insgesamt sehr gro{\ss}es Modell.
 
+
 \subsection{ULMFit}
-\textbf{Universal Language Mdoel Fine-Tuning} oder auch \textbf{ULMFit} ist ein Vorschlag eines von der Architektur recht einfach gehaltenen Sprachmodells, das Transfer Learning in NLP zug\"anglich machen wollte. Der Ansatz ist besonders darauf fokussiert, ein mit allgemeinen Daten (\textbf{Wikitext103}) trainierten Modell auf eine spezifische Aufgabe mit einem eigenen Kontext (z.B. Medizin, IT etc.) fein abzustimmen \cite{ulm}. Dadurch wird die Gr\"o{\ss}e des gelabelten Datensatzes und die Anzahl der dom\"anenspezifischen Dokumente, die f\"ur ein von Grund auf neu implementiertes Modell ben\"otigt w\"urden stark gemindert.\\
+\textbf{Universal Language Mdoel Fine-Tuning} oder auch \textbf{ULMFit} ist ein Vorschlag eines von der Architektur recht einfach gehaltenen Sprachmodells, das Transfer Learning in NLP zug\"anglich machen wollte. Der Ansatz ist besonders darauf fokussiert, ein mit allgemeinen Daten trainiertes Modell auf eine spezifische Aufgabe mit einem eigenen Kontext (z.B. Medizin, IT etc.) fein abzustimmen \cite{ulm}. Dadurch wird die Gr\"o{\ss}e des gelabelten Datensatzes und die Anzahl der dom\"anenspezifischen Dokumente, die f\"ur ein von Grund auf neu implementiertes Modell ben\"otigt w\"urden stark gemindert.\\
+
+\textbf{Architektur}\\
 Das Modell besteht aus drei LSTM-Schichten, die, um Overfitting auf den Daten zu vermeiden, mit einer sehr hohen Dropout-Rate versehen sind. Pro Schicht hat \textbf{ULMFit} 1150 versteckte Neuronen.\\
 Bei der Arbeit mit \textbf{ULMFit} werden generell drei Schritte ausgef\"uhrt \cite{ulm}:
 \begin{enumerate}
@@ -47,7 +61,15 @@ Bei der Arbeit mit \textbf{ULMFit} werden generell drei Schritte ausgef\"uhrt \c
 \item Feinabstimmung des Sprachmodells f\"ur die NLP-Aufgabe
 \item Feinabstimmung des Klassifikators f\"ur die Aufgabe
 \end{enumerate}
-Schritt 1. muss bei Einsatz des Modells nicht ausgef\"uhrt werden, da diese Version des Modells verf\"ugbar ist. Durch diesen Schritt lernt das Modell, in den verschiedenen Schichten die Merkmale der (in diesem Fall englischen) Sprache abzubilden. Bei Schritt 2. wird mit \textbf{discriminative Fine-Tuning} und einer abgeschr\"agten, dreieckigen Lernrate gearbeitet, um Merkmale der in der Aufgabe genutzen Sprache zu lernen. Diese Lernrate wird angewandt, da die verschiedenen Schichten unterschiedliche Merkmale lernen sollen und sich damit die letzten Schichten nicht mehr viel ver\"andern. Schritt 3. nutzt \textbf{gradual unfreezing} sowie die beiden in Schritt 2. genutzten Techniken f\"ur die Feinabstimmung. Hierf\"ur werden an das Sprachmodell zwei lineare Schichten mit ReLu Activation, dropout und Batchnormalisierung und eine Softmax-Schicht f\"ur die Ausgabe.
+Schritt 1. muss bei Einsatz des Modells nicht ausgef\"uhrt werden, da diese Version des Modells verf\"ugbar ist. Durch diesen Schritt lernt das Modell, in den verschiedenen Schichten die Merkmale der (in diesem Fall englischen) Sprache abzubilden. Bei Schritt 2. wird mit \textbf{discriminative Fine-Tuning} und einer abgeschr\"agten, dreieckigen Lernrate gearbeitet, um Merkmale der in der Aufgabe genutzen Sprache zu lernen. Diese Lernrate wird angewandt, da die verschiedenen Schichten unterschiedliche Merkmale lernen sollen und sich damit die letzten Schichten nicht mehr viel ver\"andern. Schritt 3. nutzt \textbf{gradual unfreezing} sowie die beiden in Schritt 2. genutzten Techniken f\"ur die Feinabstimmung. Hierf\"ur werden an das Sprachmodell zwei lineare Schichten mit ReLu Activation, dropout und Batchnormalisierung und eine Softmax-Schicht f\"ur die Ausgabe.\\
+
+\textbf{Input und Output}\\
+Die Input-Sequenzen werden vor der Verarbeitung in den LSTM-Schichten in 400 dimensionale Word Embeddings umgewandelt.\\
+Wie bei Sprachmodellen \"ublich ist der Output von \textbf{ULMFit} eine Wahrscheinlichkeitsverteilung \"uber das Vokabular, um das mit h\"ochster Wahrscheinlichkeit als n\"achtes im Satz kommendes Wort auszugeben.\\
+
+\textbf{Trainingsdaten}\\
+\textbf{ULMFit} wurde mit dem Datensatz \textbf{Wikitext-103}, der aus 103 Millionen W\"ortern in Wikipedia Artikeln besteht. Die Feinabstimmung liefert schon mit 100 Datens\"atzen gute Ergebnisse \cite{ulm}.
+
 
 
 \section{Sprachmodelle auf Basis von Transformern}
@@ -60,7 +82,7 @@ Schritt 1. muss bei Einsatz des Modells nicht ausgef\"uhrt werden, da diese Vers
 \end{figure}
 
 \subsection*{Encoder}
-Wie in Abbildung \ref{fig:attention} zu sehen, wird die Eingabe zun\"achst in Wortvektoren f\"ur jedes Eingabewort umgewandelt, die sich aus der Addition des Vektors im \textbf{Embedding Space} mit einem \textbf{Positionsvektor (Positional Encoding)}, der die Position des Wortes im Satz enth\"alt, ergibt. Der Positionsvektor wird durch Sinus- und Kosinusfunktionen bestimmt. Dieser Eingabevektor wird an einen \textbf{Encoder} weitergegeben, der eine \textbf{Attention-Matrix} f\"ur die Eingabesequenz erstellt. Sie besteht aus einem Vektor der L\"ange der Textsequenz f\"ur jedes Wort. Diese Matrix enth\"alt Informationen dar\"uber, wie relevant die einzelnen W\"orter der Sequenz f\"ureinander sind: In dem Satz
+Wie in Abbildung \ref{fig:attention} zu sehen, wird die Eingabe zun\"achst in Wortvektoren f\"ur jedes Eingabewort umgewandelt, die sich aus der Addition des Vektors im \textbf{Embedding Space} mit einem \textbf{Positionsvektor (Positional Encoding)}, der die Position des Wortes im Satz enth\"alt, ergibt. Der Positionsvektor wird durch Sinus- und Kosinusfunktionen bestimmt und ist wichtig, da Sequenzen parallel verarbeitet werden und die Position dadurch verloren geht. Dieser Eingabevektor wird an einen \textbf{Encoder} weitergegeben, der eine \textbf{Attention-Matrix} f\"ur die Eingabesequenz erstellt. Sie besteht aus einem Vektor der L\"ange der Textsequenz f\"ur jedes Wort. Diese Matrix enth\"alt Informationen dar\"uber, wie relevant die einzelnen W\"orter der Sequenz f\"ureinander sind: In dem Satz
 \begin{verbatim} 
 Der braune Hund
 \end{verbatim} 
@@ -76,8 +98,12 @@ w\"are entsprechend hier der Output (Decoder Input). Es wird in diesem Schritt a
 Diese Vektoren werden wieder aufaddiert, normiert und in ein Feed-Forward-Netz gegeben, um noch einmal addiert und normiert zu werden.\\
 Danach wird noch eine lineare und eine Softmax-Schicht angwandt, um am Ende in diesem Beispiel das Wort zu erhalten, dass mit der h\"ochsten Wahrscheinlichkeit als n\"achstes in dem Output-Satz steht. In der Lernphase wird hierzu \textbf{Masking} genutzt, bei dem je ein Wort in dem zu lernenden Ouptut-Satz "`maskiert"', also als leerer Platzhalter markiert wird.
 
+
 \subsection{GPT}
-OpenAI hat mit \textbf{Generative Pretraining} f\"ur Sprachmodelle bis zum Zeitpunkt dieser Arbeit drei Hauptversionen von \textbf{GPT} ver\"offentlicht \cite{gpt}\cite{gpt2}\cite{gpt3}. Die Sprachmodelle nutzen den \textbf{Decoder}-Teil des Transformers, um ein \textbf{autoregressives} System zu erzeugen: Wie in Sprachmodellen \"ublich wird das jeweils wahrscheinlichste n\"achste Wort ausgegeben und danach der entstehende Satz weiter als Input genutzt, wie in Abbildung \ref{fig:autoregressive} zu sehen ist.\\
+OpenAI hat mit \textbf{Generative Pretraining} f\"ur Sprachmodelle bis zum Zeitpunkt dieser Arbeit drei Hauptversionen von \textbf{GPT} ver\"offentlicht \cite{gpt}\cite{gpt2}\cite{gpt3}.\\
+
+\textbf{Architektur}\\
+Die Sprachmodelle nutzen den \textbf{Decoder}-Teil des Transformers, um ein \textbf{autoregressives} System zu erzeugen: Wie in vorhergegangenen Sprachmodellen wird das jeweils wahrscheinlichste n\"achste Wort ausgegeben und danach der entstehende Satz weiter als Input genutzt, wie in Abbildung \ref{fig:autoregressive} zu sehen ist.\\
 \begin{figure}[!ht]
 \centering
 \includegraphics[height=5cm]{pics/autoregressives_modell.png}
@@ -85,7 +111,9 @@ OpenAI hat mit \textbf{Generative Pretraining} f\"ur Sprachmodelle bis zum Zeitp
 \label{fig:autoregressive}
 \end{figure}
 Das urspr\"ungliche \textbf{GPT}-Modell besteht aus 12 solcher Decoder-Bl\"ocke, die hintereinander durchgangen werden. Die folgenden Modelle bieten auch jeweils eine Version mit 12 Decodern, dies ist aber immer die kleinste Version. Die gr\"o{\ss}te Version von \textbf{GPT-2 } umschlie{\ss}t 48 Decoder-Schichten, w\"ahrend \textbf{GPT-3} bis 96 Schichten hat. Das momentan gr\"o{\ss}te GPT-Modell hat somit mit Decoder-Parametern und eigenen Parametern f\"ur Positional Encoding und Embedding 175 Milliarden Parameter, ein gro{\ss}er Schritt nach den 1,5 Milliarden von \textbf{GPT-2}.\\
-Der weitere Unterschied dieser Modelle sind die genutzten Trainingsdaten: Das erste Modell wurde mit verschiedenen Datensets trainiert, die zusammen eine Gr\"o{\ss} von knapp \"uber 15GB erreichen, darunter die 1B Word Benchmark und PG-19. F\"ur \textbf{GPT-2} wurden ca. 40GB Daten genutzt, enthalten in dem Datensatz \textbf{WebText}, der f\"ur diese Aufgabe erstellt wurde. Die f\"ur \textbf{GPT-3} verwendeten Daten hingegen umfassen \"uber 500GB alleine mit dem genutzten Teil des \textbf{CommonCrawl} Datensatzes, der Texte aus dem Internet von 2016 bis 2019 enth\"alt und auf Duplikate \"uberpr\"uft wurde. Weiterhin wurden das eigene \textbf{WebText2} und die Datens\"atze \textbf{Books1}, \textbf{Books2} und das englischsprachige Wikipedia. Die Batchsize dieses Modells ist 0,5 Millionen. Das Modell \"ubertrifft damit an Gr\"o{\ss}e bei Weitem das, was bis zu seiner Ver\"offentlichung vorhanden war. Es ist ein Meilenstein f\"ur teil\"uberwachtes und auch un\"uberwachtes Lernen: \textbf{GPT-3} kann Aufgaben teilweise im Ansatz l\"osen, ohne Beispiele gesehen zu haben oder auch f\"ur diese Aufgabe gelernt zu haben. Besser funktioniert aber die \textbf{Few-Shot}-Technik: Man zeigt dem Modell eine gewisse Anzahl (unterer zweistelliger Bereich oder weniger) an Beispielen der Aufgabe, die gel\"ost werden soll und fragt danach ab. Dies ist aufgrund der wenig vorhandenen gelabelten Datens\"atze ein gro{\ss}er Vorteil dieses Modells.\\
+ Es ist ein Meilenstein f\"ur teil\"uberwachtes und auch un\"uberwachtes Lernen: \textbf{GPT-3} kann Aufgaben teilweise im Ansatz l\"osen, ohne Beispiele gesehen zu haben oder auch f\"ur diese Aufgabe gelernt zu haben. Besser funktioniert aber die \textbf{Few-Shot}-Technik: Man zeigt dem Modell eine gewisse Anzahl (unterer zweistelliger Bereich oder weniger) an Beispielen der Aufgabe, die gel\"ost werden soll und fragt danach ab. Dies ist aufgrund der wenig vorhandenen gelabelten Datens\"atze ein gro{\ss}er Vorteil dieses Modells.\\
+
+\textbf{Input und Output}\\
 \textbf{GPT} arbeitet als Input mit sogenannten \textbf{Kontexten}: Dazu geh\"oren hier die Beschreibung der zu erf\"ullenden Aufgabe, eventuelle Beispiele und der \textbf{Prompt}, der dazu auffordert, die Aufgabe mit dem Prompt als Input zu l\"osen. Ein Beispiel f\"ur einen Kontext ist \cite{gpt3}:
 \begin{verbatim} 
 A "whatpu" is a small, furry animal native to Tanzania. 
@@ -100,19 +128,65 @@ One day when I was playing tag with my little sister, she got
 really excited and she started doing these crazy farduddles.
 \end{verbatim} 
 Viel Feinabstimmung braucht \textbf{GPT-3} damit nicht mehr, was einer enormen Zeitersparnis entspricht. Die Vorg\"angermodelle sowie auch \textbf{GPT-3} f\"ur bessere Ergebnisse sollten jedoch mit einem \"uberwachten Trainingsschritt fein abgestimmt werden.\\
+
+\textbf{Trainingsdaten}\\
+Die genutzten Trainingsdaten sind ein wesentlicher Unterschied der Versionen: Das erste Modell wurde mit verschiedenen Datensets trainiert, die zusammen eine Gr\"o{\ss} von knapp \"uber 15GB erreichen, darunter die 1B Word Benchmark und PG-19. F\"ur \textbf{GPT-2} wurden ca. 40GB Daten genutzt, enthalten in dem Datensatz \textbf{WebText}, der f\"ur diese Aufgabe erstellt wurde. Die f\"ur \textbf{GPT-3} verwendeten Daten hingegen umfassen \"uber 500GB alleine mit dem genutzten Teil des \textbf{CommonCrawl} Datensatzes, der Texte aus dem Internet von 2016 bis 2019 enth\"alt und auf Duplikate \"uberpr\"uft wurde. Weiterhin wurden das eigene \textbf{WebText2} und die Datens\"atze \textbf{Books1}, \textbf{Books2} und das englischsprachige Wikipedia. Die Batchsize dieses Modells ist 0,5 Millionen. Das Modell \"ubertrifft damit an Gr\"o{\ss}e bei Weitem das, was bis zu seiner Ver\"offentlichung vorhanden war.\\
 Wichtig zu beachten ist, dass diese Modelle aufgrund der Qualit\"at der generierten Texte, die gr\"o{\ss}tenteils nicht mehr von von Menschen geschriebenen zu unterscheiden sind, auch gewisse Risiken bergen \cite{gpt3}: Es ist deutlich einfacher, damit Fake News und Fehlinformationen zu generieren und zu verbreiten.
 
+
 \subsection{BERT}
-Wie auch \textbf{GPT} basiert \textbf{BERT} auf der Idee, einen Teil des \textbf{Transformers} zu gebrauchen, um ein Sprachmodell zu erstellen. Hier wird jedoch nicht der \textbf{Decoder}, sondern der \textbf{Encoder} genutzt: Es gibt zwei Versionen von \textbf{BERT}, die kleinere (\textbf{BERT Base}) besteht aus 12 Encoder-Schichten - genannt \textbf{Transformer-Bl\"ocke}, w\"ahrend \textbf{BERT Large} 24 Bl\"ocke (und damit 340 Millionen Parameter) umfasst \cite{bert}. Zur Zeit seiner Ver\"offentlichung stellte \textbf{BERT} f\"ur viele Aufgaben in NLP die state-of-the art Ergebnisse.\\
-Schon am Namen dieses Sprachmodells kann man erkennen, das es nach dem Modell von \textbf{ELMo} kommen soll: Die von \textbf{GPT} nicht genutzte, aber in \textbf{ELMo} sehr erfolgreich angewandte Bidirektionalit\"at sollte wieder eingef\"uhrt werden. Dies hat den Hintergrund, dass in Sprache nicht nur die W\"orter wichtig f\"ur den Kontext eines bestimmten Wortes sind, die im Satz davor stehen - vielmehr ist die ganze Sequenz wichtig, um den ganzen Kontext zu erfassen. Ein reines Feed-Forward-Netz ist dazu nicht in der Lage. Die \textbf{Transformer}-Architektur bietet aufgrund der \textbf{Self-Attention}-Schichten eine gewisse M\"oglichkeit f\"ur bidirektionalen Kontext. Um dies auszunutzen, wird \textbf{BERT} mit verschiedenen Datens\"atzen und zu einem gewissen Grad randomisiert vortrainiert. Zu diesem Vortraining gibt es zwei Komponenten, die in einem Schritt ausgef\"uhrt werden. \textbf{BERT} erh\"alt dezu als Input zwei S\"atze. Das \textbf{Masked Language Model} wird mit jedem der beiden S\"atze trainiert, in denen zuf\"allig W\"orter maskiert werden, was effektiv einem L\"uckentext entspricht. \textbf{BERT} muss nun lernen, die in dem Satz fehlenden W\"orter einzusetzen. Die ausgegebenen Wortvektoren der maskierten W\"orter werden mit einer Output-Schicht mit dem Vokabular entsprechender Anzahl an Neuronen (hier 30000, das Vokabular von \textbf{WordPieces}) mit Softmax in eine Wahrscheinlichkeitsverteilung umgewandelt und mit einer one-hot codierten Version des tats\"achlichen Wortes abgeglichen. Auch m\"oglich ist, dass statt der Maskierung ein Wort durch ein nicht in den Satz passendes ersetzt wird und das Modell diesen Fehler korrigieren soll. Ebenso wird \textbf{Next Sentence Prediction} umgesetzt, bei der das Modell  ausgibt, ob die beiden als Input gegebenen S\"atze korrelieren.\\
+Wie auch \textbf{GPT} basiert \textbf{BERT} auf der Idee, einen Teil des \textbf{Transformers} zu gebrauchen, um ein Sprachmodell zu erstellen.\\
+
+\textbf{Architektur}\\
+Bei \textbf{BERT} wird im Unterschied zu \textbf{GPT} nicht der \textbf{Decoder}, sondern der \textbf{Encoder} genutzt: Es gibt zwei Versionen von \textbf{BERT}, die kleinere (\textbf{BERT Base}) besteht aus 12 Encoder-Schichten - genannt \textbf{Transformer-Bl\"ocke}, w\"ahrend \textbf{BERT Large} 24 Bl\"ocke (und damit 340 Millionen Parameter) umfasst \cite{bert}. Zur Zeit seiner Ver\"offentlichung stellte \textbf{BERT} f\"ur viele Aufgaben in NLP die state-of-the art Ergebnisse.\\
+Schon am Namen dieses Sprachmodells kann man erkennen, das es nach dem Modell von \textbf{ELMo} kommen soll: Die von \textbf{GPT} nicht genutzte, aber in \textbf{ELMo} sehr erfolgreich angewandte Bidirektionalit\"at sollte wieder eingef\"uhrt werden. Dies hat den Hintergrund, dass in Sprache nicht nur die W\"orter wichtig f\"ur den Kontext eines bestimmten Wortes sind, die im Satz davor stehen - vielmehr ist die ganze Sequenz wichtig, um den ganzen Kontext zu erfassen. Ein reines Feed-Forward-Netz ist dazu nicht in der Lage. Die \textbf{Transformer}-Architektur bietet aufgrund der \textbf{Self-Attention}-Schichten eine gewisse M\"oglichkeit f\"ur bidirektionalen Kontext. Um dies auszunutzen, wird \textbf{BERT} mit verschiedenen Datens\"atzen und zu einem gewissen Grad randomisiert vortrainiert. Zu diesem Vortraining gibt es zwei Komponenten, die in einem Schritt ausgef\"uhrt werden. \textbf{BERT} erh\"alt dezu als Input zwei S\"atze. Das \textbf{Masked Language Model} wird mit jedem der beiden S\"atze trainiert, in denen zuf\"allig W\"orter maskiert werden, was effektiv einem L\"uckentext entspricht. \textbf{BERT} muss nun lernen, die in dem Satz fehlenden W\"orter einzusetzen. Die ausgegebenen Wortvektoren der maskierten W\"orter werden mit einer Output-Schicht mit dem Vokabular entsprechender Anzahl an Neuronen (hier 30000, das Vokabular von \textbf{WordPieces}) mit Softmax in eine Wahrscheinlichkeitsverteilung umgewandelt und mit einer one-hot codierten Version des tats\"achlichen Wortes abgeglichen. Auch m\"oglich ist, dass statt der Maskierung ein Wort durch ein nicht in den Satz passendes ersetzt wird und das Modell diesen Fehler korrigieren soll. Ebenso wird \textbf{Next Sentence Prediction} umgesetzt, bei der das Modell  ausgibt, ob die beiden als Input gegebenen S\"atze korrelieren. Der Output wird, wie bei \textbf{Transformern} \"ublich, parallel \"uber eine gesamte Eingabesequenz ausgegeben.\\
 F\"ur die Feinabstimmung des Sprachmodells werden die Parameter der Output-Schicht durch einen aufgabenspezifischen Datensatz neu erlernt.\\
-Als Input verarbeitet \textbf{BERT} Sequenzen, wobei hier spezielle Tokens genutzt werden. Zu Beginn einer Sequenz wird das Token [CLS] gesetzt, das als Platzhalter f\"ur den Klassifikator fungiert. Der Klassifikator wird nach Verarbeitung durch \textbf{BERT} mit einem aus einer einzigen Schicht bestehenden Feed-Forward-Netz mit Softmax bestimmt. Soll mehr als ein Label ausgegeben werden muss hier die Anzahl an Output-Neuronen angepasst werden. F\"ur die anderen W\"orter der Sequenz werden die erstellten Wortvektoren ausgegeben, bei \textbf{BERT Base} haben diese 768 Dimensionen.\\
+
+\textbf{Input und Output}\\
+Als Input verarbeitet \textbf{BERT} Sequenzen, wobei hier spezielle Tokens genutzt werden. Das [MASK]-Token ersetzt maskierte W\"orter w\"ahrend des Vortrainings, um zu signalisieren, welche W\"orter untersucht werden m\"ussen. Diese Mechanik kann aber auch Probleme erzeugen, da das Token nur w\"ahrend des Vortrainings vorkommt: Bei Feinabstimmung und Test ist es nicht vorhanden, es kann daher nicht mit Sicherheit gesagt werden, wie \textbf{BERT} lernt, damit umzugehen \cite{xlnetex}.\\
+Zu Beginn einer Sequenz wird das Token [CLS] gesetzt, das als Platzhalter f\"ur den Klassifikator fungiert. Der Klassifikator wird nach Verarbeitung durch \textbf{BERT} mit einem aus einer einzigen Schicht bestehenden Feed-Forward-Netz mit Softmax bestimmt. Soll mehr als ein Label ausgegeben werden muss hier die Anzahl an Output-Neuronen angepasst werden. F\"ur die anderen W\"orter der Sequenz werden die erstellten Wortvektoren ausgegeben, bei \textbf{BERT Base} haben diese 768 Dimensionen.\\
 Das Token [SEP] wird gebraucht, um zwei zusammenh\"angende Sequenzen zu trennen, z.B. bei Frage/Antwort-Paaren. Hierbei wird dan an der Position des [CLS]-Tokens kein Klassifikator mehr ausgegeben, sondern die Wahrscheinlichkeit, das der Satz nach [SEP] auf den Satz vor dem Token folgt.\\
-So kann \textbf{BERT} f\"ur die verschiedensten Aufgaben verwendet werden. Aber auch die reinen Word Embeddings k\"onnen ausgelesen und in einem eigenen erstellten Netz f\"ur weitere Aufgaben verwendet werden. Da jeder Decoder-Block des Modells einen eigenen Vektor f\"ur jedes Wort ausgeben kann, muss man im Einsatz dabei jedoch darauf achten, welche dieser Schichten die am besten Kontextualisierung des Wortes darstellt. In Tests der Entwickler erreichte hierbei eine Verkettung der letzten vier Schichten die besten Ergebnisse \cite{bert}.
+So kann \textbf{BERT} f\"ur die verschiedensten Aufgaben verwendet werden. Aber auch die reinen Word Embeddings k\"onnen ausgelesen und in einem eigenen erstellten Netz f\"ur weitere Aufgaben verwendet werden. Da jeder Decoder-Block des Modells einen eigenen Vektor f\"ur jedes Wort ausgeben kann, muss man im Einsatz dabei jedoch darauf achten, welche dieser Schichten die am besten Kontextualisierung des Wortes darstellt. In Tests der Entwickler erreichte hierbei eine Verkettung der letzten vier Schichten die besten Ergebnisse \cite{bert}.\\
+Das Embedding der W\"orter in der Vorverarbeitung folgt einer \textbf{Byte Pair Codierung} auf Buchstabenebene.\\
+
+\textbf{Trainingsdaten}\\
+Zum Vortraining von \textbf{BERT} wurden die englischsprachigen \textit{Wikipedia} Artikel sowie BookCorpus mit insgesamt 13GB genutzt.
 
 
 \subsection{RoBERTa}
+Da \textbf{BERT} ein sehr vielversprechendes Modell war, wurde versucht, dieses zu optimieren, ohne die urspr\"ungliche Architektur zu \"andern. Ein besonderer Fokus lag dabei auf den [MASK]-Tokens, die in keinem anderen Sprachmodell verwendet werden \cite{roberta}.\\
 
-\section{Weitere Sprachmodelle}
+\textbf{Architektur}\\
+Die hier benutzte Architektur ist im Grunde die in \textbf{BERT} genutzte. Verschiedene Parameter wurden dabei ge\"andert, wie die h\"ochste verwendete Lernrate und den Epsilon-Paramater des Adam Optimizers.\\
+
+\textbf{Input und Output}\\
+Insgesamt wurde \textbf{RoBERTa} am deutlichsten \"uber den Input beim Vortraining ge\"andert. Trotz der besseren Ergebnisse bei \textbf{BERT} durch die parrallel zum \textbf{Masked Language Model} ausgewerteten \textbf{Next Sentence Prediction} werden bei \textbf{RoBERTa} diese Ergebnisse nicht best\"atigt. Bei der Implementation von \textbf{RoBERTa} wurde \textbf{NSP} entsprechend weggelassen.\\
+Die Encodierung der Sequenzen in der Vorverarbeitung wurde ebenfalls ge\"andert: Es wird eine \textbf{Byte Pair Codierung} auf Byte-Ebene (entgegen Buchstabenebene bei \textbf{BERT}) genutzt. Dadurch werden die W\"orter unterteilt, das Vokabular umfasst 50000 solcher Wortteile. Durch diese Embeddings kommen bis zu 20 Millionen Parameter zu den \textbf{BERT}-Versionen hinzu.\\
+Es werden ebenfalls l\"angere Batches mit einer Gr\"o{\ss}e von 8000 verwendet und die Trainingsdaten werden in l\"angere Sequenzen aufgeteilt. Der Einsatz der [MASK]-Tokens wird hier auch ein wenig abge\"andert: Statt die Tokens einmal f\"ur die Daten zu bestimmen - wenn auch zuf\"allig - werden sie bei \textbf{RoBERTa} dynamisch bestimmt. Dies hat den Vorteil, dass das Modell, wenn es einen Satz zum zweiten Mal sieht, dieser nur mit sehr geringer Wahrscheinlichkeit dieselbe Verteilung der Tokens hat. Dadurch kann das Modell den Kontext insgesamt besser erfassen.\\
+
+\textbf{Trainingsdaten}\\
+Da auch die Entwickler von \textbf{BERT} schon angermerkt hatten, dass ein gr\"o{\ss}erer Trainingsdatensatz f\"orderlich f\"ur die Performanz des Modells sein w\"urde, wurde dies hier umgesetzt. Zus\"atzlich zu den voher verwendeten 13GB an BookCorpus und Wikitext werden die Datens\"atze \textbf{CC-News}, \textbf{OpenWebText} (eine frei verf\"ugbare Version des in \textbf{GPT} genutzten Datensatzes) und \textbf{STORIES} eingesetzt, um insgesamt 160GB an Trainingsdaten zu erhalten, die das Modell dadurch insgesamt nicht so h\"aufig sieht. Damit ist das Modell deutlich gr\"o{\ss}er als das urspr\"ungliche \textbf{BERT}.
+
 
 \subsection{XLNet}
+\textbf{XLNet} basiert auf zwei Schl\"usselideen: Der Einsatz einer \textbf{RNN}-\"ahnlichen Struktur, um noch mehr Kontext zu erfassen, als mit dem ursp\"unglichen \textbf{Transformer}-Modell m\"oglich ist, und das Konzept von \textbf{BERT} so anzupassen, dass Maskierung im Training nicht mehr gebraucht wird, um eventuelle Fehler zu umgehen \cite{xlnetex}.
+
+\subsubsection*{Transformer XL}
+In diesem Sprachmodell wird eine Abwandlung der \textbf{Transformer} genutzt. Da diese Sequenzen parallel verarbeiten, gibt es eine obere Grenze and W\"ortern, die gleichzeitig verarbeitet werden k\"onnen, die darin resultiert, dass auch die Anzahl an W\"ortern, die als Kontext gelernt werden begrenzt ist. Diese Grenze ist aufgrund der heutigen Rechenm\"oglichkeiten recht hoch \cite{xlnetex}, aber sie existiert. Die Entwickler haben daher eine Technik erfunden, die die Funktionsweise eines \textbf{RNNs} nachbildet: Der Status des Netzes wird nach Verarbeitung einer Sequenz eingefroren und der folgenden Sequenz als Input mitgegeben. Dadurch k\"onnen auch sehr lange Sequenzen "`ganz"' verarbeitet werden. Dabei entsteht allerdings das Problem, das bei dem urspr\"unglichen \textbf{Transformer} durch \textbf{Positional Encoding} gel\"ost wurde: Das Modell kann einem Wort im Satz keine Position mehr zuordnen, da alles parallel verarbeitet wird. Dies wird im \textbf{Transformer XL} durch \textbf{relative positional embedding} umgangen. Durch dieses Embedding wird die relative Position eines Wortes zu einem anderen codiert, sodass die \textbf{Attention}-Werte f\"ur diese relative Relation korrekt bestimmt werden k\"onnen.
+
+\textbf{Architektur}\\
+Der Aufbau des Modelles gleicht dem von \textbf{BERT}, mit 12 Schichten und den gleich gew\"ahlten Hyperparametern sowie einer Sequenzl\"ange von 512 hat das Modell eine sehr \"ahnliche Gr\"o{\ss}e. Der Unterschied besteht hier nur in der Nutzung von \textbf{Transformer XL} statt der urspr\"unglichen Version. Diese lieferten bessere Ergebnisse, auch ohne Nutzung der im Folgenden erw\"ahnten Permutation.
+
+\textbf{Input und Output}\\
+Um die Maskierung zu umgehen, die bei \textbf{BERT} im Vortraining sehr wichtig ist, wird bei \textbf{XLNet} die Idee der \textbf{Permutationsmodellierung} eingef\"uhrt. Der dadurch entstehende Unterschied wird in Abbildung \ref{fig:xlnet} verdeutlicht.
+\begin{figure}[!ht]
+\centering
+\includegraphics[height=5cm]{pics/xlnet_vs_bert.png}
+\caption{Unterschied der Textgenerierung von BERT zu XLNet: Permutation \cite{xlnetex}}
+\label{fig:xlnet}
+\end{figure}
+W\"ahrend mit \textbf{BERT} alle Wortvektoren inklusive dem im Input maskierten parallel ausgegeben werden, findet hier bei \textbf{XLNet} eine Permutation statt: Die Vektoren werden in einer zuf\"allig gew\"ahlten Reihenfolge ausgegeben. Dies gibt dem Modell auch wieder die M\"oglichkeit der Nutzung des Konzepts der Autoregressivit\"at, das bei fr\"uheren Modellen erfolgreich eingesetzt wurde. Zu der autoregressiven Eigenschaft kommt durch die Permutation eine Bidirektionalit\"at, da W\"orter zu beiden Seiten des n\"achsten im Input sein k\"onnen.\\
+
+\textbf{Trainingsdaten}\\
+Die bei \textbf{BERT} bew\"ahrten Trainingsdaten \textbf{BookCorpus} und der englischsprachige Teil von \textit{Wikipedia} werden auch hier eingesetzt. Zus\"atzlich werden \textbf{Giga5}, \textbf{ClueWeb} und \textbf{Common Crawl} in einer ges\"auberten Version benutzt, sodass insgesamt 126GB an Textdaten verwendet werden.
+
