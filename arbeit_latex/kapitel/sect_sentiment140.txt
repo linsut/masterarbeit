@@ -1,0 +1,66 @@
+\subsection{Sentiment140}
+\label{sec:sentiment140}
+Dieser Datensatz \cite{sentiment140} enth\"alt 16 Millionen englischsprachige Tweets, die mit einem der Sentiment-Werte von 0 und 4 annotiert sind: 4 ist positiv und 0 negativ. Da \textbf{sentiment140} von seinen Urhebern schon zum Training f\"ur Sentiment Analysis genutzt wurde, ist dieser Datensatz schon weitestgehend ges\"aubert: Er enth\"alt nur noch wenige doppelte Buchstaben und keine Emoticons, was f\"ur die reine Textauswertung hilfreich ist. Somit m\"ussen in diesem Datensatz noch Nutzernamen und Links entfernt oder in Tokens umgewandelt werden. Da die urspr\"unglichen Labels 0 und 4 nicht repr\"asentativ und f\"ur Sprachmodelle ungeeignet sind, werden sie umgewandelt in 0 und 1.\\
+%Code zur Säuberung
+\lstset{language=Python}
+\lstset{frame=lines}
+\lstset{caption={S\"auberung des Datensatzes}}
+\lstset{captionpos=b}
+\lstset{label={lst:clean_140}}
+\lstset{basicstyle=\footnotesize}
+\begin{lstlisting}
+df_train.tweet = df_train.tweet.str.lower()
+df_test.tweet = df_test.tweet.str.lower()
+
+# Delete URLs
+df_train.text = df_train.text.apply(lambda x:re.sub(r'http\S+', '', x))
+df_test.text = df_test.text.apply(lambda x:re.sub(r'http\S+', '', x))
+
+#Tokenize, better for emojis, double characters and handle stripping than pure text
+tokenizer = TweetTokenizer(strip_handles=True, reduce_len=True)
+df_train.tweet = df_train.tweet.apply(lambda x: tokenizer.tokenize(x))
+df_test.tweet = df_test.tweet.apply(lambda x: tokenizer.tokenize(x))
+
+# Detokenize for better processing
+df_train.tweet = df_train.tweet.apply(lambda x: ' '.join(x))
+df_test.tweet = df_test.tweet.apply(lambda x: ' '.join(x))
+
+df_train.tweet = df_train.tweet.map(lambda x : 
+	x.translate(str.maketrans('', '', string.punctuation)))
+df_test.tweet = df_test.tweet.map(lambda x : 
+	x.translate(str.maketrans('', '', string.punctuation)))
+
+df_train.tweet = df_train.tweet.str.replace("[0-9]", " ")
+df_test.tweet = df_test.tweet.str.replace("[0-9]", " ")
+
+df_train.tweet = df_train.tweet.str.strip(string.whitespace)
+df_test.tweet = df_test.tweet.str.strip(string.whitespace)
+
+# Recreate index that was shuffeled when splitting test and train
+df_train = df_train.reset_index(drop=True)
+df_test = df_test.reset_index(drop=True)
+\end{lstlisting}
+
+%Beispiele aus gesäubertem Datensatz
+Das Ergebnis ist ein dataframe (jeweils f\"ur Training und Test) von dem im Folgenden Beispiele dargestellt sind:
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+sentiment & tweet\\ 
+\hline\hline
+0&oh why are you feeling like that\\
+0&gahh noo  peyton needs to live  this is horrible\\
+\hline
+1&thank you glad you like it  there is a product review bit on the site enjoy knitting it\\
+1&great minds think alike\\
+\hline    
+\end{tabular}
+\end{center}
+Es sind weiterhin nur Tweets enthalten, in denen nicht positive und negative Sentiments gleichzeitig ausgedr\"uckt werden.
+Die Labels des Datensatzes wurde durch Auswertung von Emoticons erstellt, aus dem reinen Text ist die Emotion daher teilweise nur schwierig herauszulesen.
+
+%Ausgangsbasis
+
+\subsubsection*{Sentiment140}
+Da dieser Datensatz die Labels 0 und 1 besitzt wurden diese umgerechnet zu respektive -1 und 1. Dadurch sind diese vergleichbar mit den Ergebnissen von \textit{TextBlob}. Die Auswertung des gesamten Datensatzes mit der Bibliothek dauert vier Minuten, wie erwartet ist die Genauigkeit mit 0,105 nicht sehr hoch.
+0,111, 0,253
