@@ -2,23 +2,25 @@
 %% Kapitel
 %%
 \chapter{Auswertung}
+Im Folgenden werden die Ergebnisse aus den Experimenten des lezten Kapitels besprochen und m\"ogliche Verbesserungen angesprochen.
 
 \section{Ergebnisse}
-
-
-%\begin{verbatim} 
-%Blablabla
-%  Blablabla
-%\end{verbatim} 
-
+Bei \textbf{Sentiment Analysis} werden durch die Sprachmodelle schnell bessere Ergebnisse erreicht, als ohne. Besonders die nicht-transformerbasierten Modelle sind zeitlich bei der Ausf\"uhrung sehr gut, die Genauigkeitswerte sind mit \"uber 80\% durchaus wettbewerbf\"ahig. Ist ein gro{\ss}er Datensatz vorhanden, kann auch entsprechend gut trainiert werden. Die transformerbasierten Modelle scheinen deutlich resistenter gegen \textbf{Overfitting} auch bei kleinen Datens\"atzen zu sein, brauchen aber viel Training, um wirklich hohe Genauigkeiten zu erreichen. Das Problem scheint hierbei haupts\"achlich bei der Multi-Klassen Klassifizierung zu liegen, da diese Modelle l\"anger brauchen, um \"uber zwei Klassen hinaus zu klassifizieren.\\
+\begin{figure}[!ht]
+\centering
+\includegraphics[height=5cm]{pics/accuracies_sentiment.png}
+\caption{Genauigkeiten bei Sentiment Analysis}
+\label{fig:acc_sentiment}
+\end{figure}
+\textbf{Stance detection}
+\begin{figure}[!ht]
+\centering
+\includegraphics[height=5cm]{pics/accuracies_stance.png}
+\caption{Genauigkeiten bei Stance Detection}
+\label{fig:acc_stance}
+\end{figure}
+%Graph der Genauigkeiten, welches der Sprachmodelle ist am Besten für was geeignet
 
 \section{Ausblick}
-
-
-%Blablabla \ref{pict_1}
-
-%\begin{figure}
-%\centerline{\includegraphics[width=7cm]{pics/athene.png}}
-%\caption{Blablabla}
-%\label{pict_1}
-%\end{figure}
+In nachfolgenden Arbeiten kann die Trainingszeit und die Anzahl der getesteten Datensa\"atze erh\"oht werden, da die meisten Modelle von mehr Trainingszeit profitieren k\"onnen. Weiterhin k\"onnen auch bei der Textverarbeitung angebracht werden: Hierbei kann \textbf{Stemming} angewendet werden. Dadurch werden die W\"orter in ihre Grundform umgewandelt mit vorausgehenden oder nachfolgenden Silben als separate Tokens. Aus dem Wort "`playing"' werden so z.B. die zwei Tokens <play> und <ing>. Diese Art der \textbf{Tokenization} ist f\"ur den Einsatz mit Sprachmodellen am besten geeignet, da auch in diesen nicht alle Vokabeln einer Sprache enthalten sein k\"onnen - das w\"are schlicht ein zu gro{\ss}es Vokabular. Durch \textbf{Stemming} wird gew\"ahrleistet, dass die meisten W\"orter, sowie die jeweilige Pr\"afix und Suffix je einem Vektor zugeordnet werden k\"onnen (sollten keine Rechtschreibfehler enthalten sein).\\
+Da \textbf{NLP} ein sehr weit verbreitetes Thema ist, werden auch in den n\"achsten Jahren immer weitere Sprachmodelle ver\"offentlicht werden, die in den unterschiedlichen Aufgabenstellungen St\"arken oder auch Schw\"achen haben werden und entsprechend getestet werden sollten.

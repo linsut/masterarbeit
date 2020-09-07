@@ -21,6 +21,7 @@ F\"ur die verschiedenen Sprachmodelle ist die Nutzung mehrer Bibliotheken f\"ur 
 \item \textbf{Fastai}
 \item \textbf{Torch}
 \item \textbf{gpt}
+\item \textbf{simpletransformers} \cite{simpletransformers} f\"ur die Einbindung der transformerbasierten Sprachmodelle
 \item \textbf{sklearn} f\"ur Auswertung der Ergebnisse
 \item \textbf{nltk, pandas, string} und andere Standardbibliotheken f\"ur Textverarbeitung 
 \end{itemize}
@@ -34,7 +35,6 @@ Die Daten werden alle vorverarbeitet, um die Texte einheitlich und gut verarbeit
 \item Whitespaces an Anfang und Ende entfernen
 \item Emojis entfernen
 \end{itemize}
-Weiterhin werden die Tweets einer \textbf{Tokenization} unterzogen, durch die die W\"orter, Emojis und Links in \textbf{Tokens} umgewandelt werden. Hierbei wird auch \textbf{Stemming} angewendet: Dadurch werden die W\"orter in ihre Grundform umgewandelt mit vorausgehenden oder nachfolgenden Silben als separate Tokens. Aus dem Wort "`playing"' werden so z.B. die zwei Tokens <play> und <ing>. Diese Art der \textbf{Tokenization} ist f\"ur den Einsatz mit Sprachmodellen am besten geeignet, da auch in diesen nicht alle Vokabeln einer Sprache enthalten sein k\"onnen - das w\"are schlicht ein zu gro{\ss}es Vokabular. Durch \textbf{Stemming} wird gew\"ahrleistet, dass die meisten W\"orter, sowie die jeweilige Pr\"afix und Suffix je einem Vektor zugeordnet werden k\"onnen (sollten keine Rechtschreibfehler enthalten sein).\\
 Die Daten f\"ur den Teil \textbf{Stance detection} haben unterschiedliche Urspr\"unge. Datens\"atze bestehen haupts\"achlich aus Artikeln, deren \"Uberschriften und den jeweiligen angesprochenen Stances. Auch diese Daten werden einer Datenreinigung unterzogen. Diese unterscheidet sich nur leicht von der f\"ur die \textbf{Sentiment Analysis} durchgef\"uhrte, da die Artikel im Allgemeinen keine sogenannten \textit{handles} oder Emojis enthalten. Diese Datens\"atze sind gelabelt, um einen sp\"ateren Test m\"oglich zu machen.\\
 Wie bei sehr vielen Machine Learning Aufgaben h\"angen die Ergebnisse stark von der Qualit\"at der genutzten Daten ab. Es wurde demnach versucht, alle Datens\"atze so zu reinigen, dass die Performanz optimal wurde. Auf etwaige zus\"atzliche Schritte wird in der jeweiligen Beschreibung eingegangen.\\
 Die Datens\"atze werden in Test- und Trainingsdaten aufgeteilt, wobei der Anteil der Testdaten 33\% des gesamten Datensatzes ist.
@@ -103,7 +103,7 @@ imessage isnt working thanks&-1\\
 \subsection{US Airline Sentiment}
 \label{sec:airlinesent}
 Wie auch der Datensatz aus Teil \ref{sec:applesent} wurde der \textbf{US Airline Sentiment} durch Anwendung von Filtern von \textit{Twitter} bezogen \cite{airlines}. Der Datensatz besteht aus 14640 in Englisch verfassten Tweets mit manuell gelabelten Meinungen der Nutzer zu verschiedenen Fluggesellschaften. Die Einteilung der Sentiment-Werte ist hier als Label statt numerisch gegeben: Es gibt die Labels \textit{neutral, negative} und \textit{positive}. Zur Verarbeitung durch die Sprachmodelle wurden diese Labels jeweils numerisch codiert.\\
-Da in den Texten noch Emojis vorhanden sind, werden diese durch den in Listing \ref{lst:clean_airline} gezeigten Code entfernt. Beispiele aus dem ges\"auberten Datensatz sind in der folgenden Tabelle gegeben.
+Da in den Texten noch Emojis vorhanden sind, werden diese durch den in Listing \ref{lst:clean_airline} gezeigten Code entfernt. Es wurden ebenfalls Versuche mit noch enthaltenen Emojis durchgef\"uhrt. Beispiele aus dem ges\"auberten Datensatz sind in der folgenden Tabelle gegeben.
 %Code zur Säuberung
 \lstset{language=Python}
 \lstset{frame=lines}
@@ -157,9 +157,46 @@ yo this the ugliest filter eveeer son  im weaaak&NEG\\
 \end{tabular}
 \end{center}
 
+\subsection{Fake News Challenge}
+\label{sec:tfnc}
+Dieser Datensatz besteht aus 49972 Artikeln, verschiedenen Aussagen, die \"uber den Text (oder einen anderen) getroffen wurden und der Beziehung zwischen den Aussagen und den Artikeln \cite{fnc}. Beziehungen werden in die Kategorien "`unrelated"', "`agree"', "`discuss"' und "`disagree"' eingeordnet. Diese Klassifizierung wurde f\"ur die Verarbeitung durch die Modelle numerisch codiert. Da es sich hier um Artikel handelt, m\"ussen bei der Datenreinigung keine Emojis oder \textit{Twitter-Handles} beachtet werden. Die in unterschiedlichen Dateien vorliegenden Artikel werden den Aussagen zugeordnet und danach in Kleinbuchstaben umgewandelt. Zeichensetzung sowie Whitespaces an Anfang und Ende des Artikels werden entfernt. Gek\"urzte Beispiele aus dem Datensatz sind im Folgenden gelistet.
+%Beispiele aus gesäubertem Datensatz
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+Aussage & Artikel & Stance\\ 
+\hline\hline
+ mexico says students not& more graves have been discovered at  & discuss\\
+ among dead in mass grave & the site where 43 students went missing &\\
+\hline
+isis beheads american & afghanistan veteran sam arnold uploaded this & unrelated\\
+ photojournalist james wright & spinechilling  video of a us marine getting &\\
+ foley threatens more to come & a direct headshot from a taliban sniper [...] &\\
+\hline    
+\end{tabular}
+\end{center}
+
+\subsection{SemEval}
+\label{sec:semeval}
+\textbf{SemEval} wurde urspr\"unglich f\"ur einen ausgeschriebenen Wettbewerb erstellt \cite{semeval}. In diesem Datensatz sind 2056 Tweets enthalten, die gegen drei unterschiedliche \textbf{Targets} auf ihre Haltung \"uberpr\"uft wurden. Die Haltung ist klassifiziert durch die Kategorien "`AGAINST"', "`FAVOR"' und "`NONE"'. Auch hier wurden die Kategorien numerisch codiert. Die S\"auberung l\"auft analof zu der S\"auberung der Tweets in den vorangegangenen Datens\"atzen. Die Themen dieses Wettbewerbs sind Hillary Clinton, Donald Trump, Atheismus, Feminismus, Klimawandel ist real und das Recht auf Abtreibung.
+
+%Beispiele aus gesäubertem Datensatz
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+Target & Tweet & Stance\\ 
+\hline\hline
+ hillary clinton & and  handovertheserver she wiped clean  30k deleted & AGAINST\\
+  & emails  explains dereliction of duty  lies re benghazi  etc tcot semst  &\\
+\hline
+hillary clinton & hillary is our best choice if we truly want to & FAVOR\\
+&  continue being a progressive nation  ohio semst &\\
+\hline    
+\end{tabular}
+\end{center}
 
 \section{Sentiment Analysis}
-Im Folgenden werden die Experimente zu \textbf{Sentiment Analysis} im Detail beschrieben. Hierbei wird zun\"achst das verwendete Modell beschrieben und dann auf die spezifischen Aspekte wie Codierung der Labels und Ergebnisse zu den verschiedenen Datens\"atze eingegangen.
+Im Folgenden werden die Experimente zu \textbf{Sentiment Analysis} im Detail beschrieben. Hierbei wird zun\"achst das verwendete Modell beschrieben und dann auf die spezifischen Aspekte wie Codierung der Labels und Ergebnisse zu den verschiedenen Datens\"atze eingegangen. 
 
 \subsection{Ausgangsbasis}
 Um einen Vergleich zu haben, wie performant und genau \textbf{Sentiment Analysis} mit Sprachmodellen ist, wurde zun\"achst ein Ansatz ausgewertet, der keinen Gebrauch von Deep Learning macht. Die Ver\"anderung der Genauigkeit im Vergleich zu diesem Ansatz gibt einen Anhaltspunkt, wie viel Sprachmodelle in Sentiment Analysis leisten k\"onnen.\\
@@ -178,13 +215,13 @@ data.insert(2, "blobpolarity",
 \end{lstlisting}
 
 \subsubsection*{Apple Sentiment}
-Die Einstufungen m\"ussen bei diesem Datensatz nicht umgerechnet werden. Aufgrund der begrenzten Anzahl an Daten in dem Datensatz dauert die Berechnung der Sentiment-Werte unter einer Minute. Der Genauigkeitswert liegt bei 0,530, ein erwarteter Anstieg gegen\"uber dem \textbf{Sentimen140} Datensatz, da TextBlob hier auch die neutralen Klassifikationen anbringen konnte.
+Die Einstufungen m\"ussen bei diesem Datensatz nicht umgerechnet werden. Aufgrund der begrenzten Anzahl an Daten in dem Datensatz dauert die Berechnung der Sentiment-Werte unter einer Minute. Der Genauigkeitswert liegt bei 53,0\%.
 
 \subsubsection*{US Airline Sentiment}
-In diesem Datensatz werden die Labels in eine numerische Form gebracht, sodass die Werte analog zum letzten Experiment bei -1, 0 und 1 liegen. Auch bei diesem Datensatz dauert die Auswertung unter einer Minute. Es wird eine Genauigkeit von 0,257 erreicht.
+In diesem Datensatz werden die Labels in eine numerische Form gebracht, sodass die Werte analog zum letzten Experiment bei -1, 0 und 1 liegen. Auch bei diesem Datensatz dauert die Auswertung unter einer Minute. Es wird eine Genauigkeit von 25,7\% erreicht.
 
 \subsubsection*{T4SA}
-Wie in dem \textbf{US Airline Sentiment} Datensatz werden die Labels numerisch codiert. Die Auswertung dauert 3 Minuten und ergibt eine Genauigkeit von 0,661.
+Wie in dem \textbf{US Airline Sentiment} Datensatz werden die Labels numerisch codiert. Die Auswertung dauert 3 Minuten und ergibt eine Genauigkeit von 66,1\%.
 
 \subsubsection*{Auswertung}
 Die Genauigkeitswerte schwanken stark, da kein Lernvorgang stattfindet und alle Datens\"atze nach dem gleichen Prinzip ausgewertet werden, obwohl sie an sich unterschiedliche Sprachaspekte enthalten. Die h\"aufigste Klassifizierung von TextBlob ist "`Neutral"', wodurch die \textbf{F1-Score} hier meist am h\"ochsten ist. Die Datens\"atze sind dabei nicht ganz ausgeglichen und in den Tests\"atzen \textbf{Apple Sentiment} und \textbf{T4SA} sind mehr neutral klassifizierte Tweets enthalten, was sich in der h\"oheren Genauigkeit niederschl\"agt.
@@ -231,15 +268,16 @@ activation_1 (Activation)    (None, 3)                 0
 \end{lstlisting}
 
 \subsubsection*{Apple Sentiment}
-Die Bestimmung der Wortvektoren dauert ca. 15 Sekunden, die Auswertung erfolgt in unter einer Sekunde. Mit der \textbf{Logistischen Regression} wird eine Genauigkeit von 0,838 erreicht. Das LSTM-Netz wird in 20 Epochen trainiert und liefert eine Genauigkeit von 0,820.
+Die Bestimmung der Wortvektoren dauert ca. 15 Sekunden, die Auswertung erfolgt in unter einer Sekunde. Mit der \textbf{Logistischen Regression} wird eine Genauigkeit von 83,8\% erreicht. Das LSTM-Netz wird in 20 Epochen trainiert und liefert eine Genauigkeit von 82,0\%.
 
 \subsubsection*{US Airline Sentiment}
-\textbf{ELMo} Wortvektoren sind nach 45 Sekunden berechnet, die Berechnung der \textbf{Logistischen Regression} dauert eine halbe Minute. Dadurch wird eine Genauigkeit von 0,810 erreicht.  Aus dem wieder in 20 Epochen trainierten LSTM-Netz folgt eine Genauigkeit von 0,815.
+\textbf{ELMo} Wortvektoren sind nach 45 Sekunden berechnet, die Berechnung der \textbf{Logistischen Regression} dauert eine halbe Minute. Dadurch wird eine Genauigkeit von 81,0\% erreicht.  Aus dem wieder in 20 Epochen trainierten LSTM-Netz folgt eine Genauigkeit von 81,5\%.
 
 \subsubsection*{T4SA}
+Die L\"ange des Datensatzes wirkt sich in einer l\"angeren Berechnungszeit aus: Die Wortvektoren sind nach 40 Minuten bestimmt. Auch die Berechnung der \textbf{Logistischen Regression} dauert mit ... etwas l\"anger und das in ... Epochen trainierte LSTM-Modell braucht .... Die erreichten Genauigkeiten liegen bei ... bzw. .... %Probleme mit RAM
 
 \subsubsection*{Auswertung}
-Die erreichten Genauigkeiten wie auch die \textbf{F1}-Werte weisen darauf hin, dass bei der Arbeit mit \textbf{ELMo}-Vektoren der Einsatz von \textbf{Logistischer Regression} ausreichend ist, um ein Modell zu bestimmen, ein LSTM-Netz gibt kaum Verbesserungen. Die in diesem Experiment errechneten Genauigkeiten sind recht weit von state-of-the-art-Ergebnissen entfernt.\\
+Die erreichten Genauigkeiten wie auch die \textbf{F1}-Werte weisen darauf hin, dass bei der Arbeit mit \textbf{ELMo}-Vektoren der Einsatz von \textbf{Logistischer Regression} ausreichend ist, um ein Modell zu bestimmen, ein LSTM-Netz gibt kaum Verbesserungen. Die in diesem Experiment errechneten Genauigkeiten sind weit von state-of-the-art-Ergebnissen entfernt.\\
 \textbf{Logistische Regression}
 \begin{center}
 \begin{tabular}{|c||c|c|c|}
@@ -289,7 +327,7 @@ Daraufhin wird das geladene \textbf{ULMFit} Sprachmodell mit den Tweet-Texten de
 \begin{figure}[!ht]
 \centering
 \includegraphics[height=5cm]{pics/lr_finder_ulmfit.png}
-\caption{Lernratenfinder \cite{elmoex}}
+\caption{Lernratenfinder}
 \label{fig:lr_ulmfit}
 \end{figure}
 Der n\"achste Schritt besteht aus dem \textbf{unfreezing} der Gewichte und dem Trainieren des Sprachmodells mit den Textdaten. Dazu wird die Anzahl der Epochen an den jeweiligen Datensatz angepasst. Es wird eine Anzahl gew\"ahlt, die der Gr\"o{\ss}e des Datensatzes angemessen ist und nach dem \textbf{Validation Loss} entschieden, wann gestoppt wird: Die maximale Anzahl der Epochen ist erreicht, sobald das \textbf{Validation Loss} h\"oher wird um \textbf{Overfitting} zu vermeiden. Die daraus errechneten Gewichte werden f\"ur die sp\"atere Verwendung abgespeichert.\\
@@ -309,14 +347,14 @@ learn.fit_one_cycle(2, slice(1e-3/(2.6**4),1e-3), moms=(0.8,0.7), wd=0.1)
 \end{lstlisting}
 
 \subsubsection*{Apple Sentiment}
-Auch bei diesem Modell dauert das Trainieren des Modells in 20 Epochen und des Classifiers mit dem Datensatz unter einer Minute. Mit einer GPU kann hier schon ein gewisser Grad an Parallelisierung stattfinden.  Erreichte Genauigkeiten liegen bei 0,824. 
+Auch bei diesem Modell dauert das Trainieren des Modells in 20 Epochen und des Classifiers mit dem Datensatz unter einer Minute. Mit einer GPU kann hier schon ein gewisser Grad an Parallelisierung stattfinden.  Erreichte Genauigkeiten liegen bei 82,4\%. 
 
 
 \subsubsection*{US Airline Sentiment}
-Durch die \textbf{one-hot-Codierung} des Datensatzes f\"allt die anderweitige numerische Codierung der Labels weg. Die ermittelte Anzahl an Epochen, die das Sprachmodell trainiert wird, liegt bei zehn. Damit dauert das Training des Sprachmodells 50 Sekunden. Die Feinabstimmung des Classifiers dauert eine weitere Minute, es werden Genauigkeiten bis 0,885 erreicht.
+Durch die \textbf{one-hot-Codierung} des Datensatzes f\"allt die anderweitige numerische Codierung der Labels weg. Die ermittelte Anzahl an Epochen, die das Sprachmodell trainiert wird, liegt bei zehn. Damit dauert das Training des Sprachmodells 50 Sekunden. Die Feinabstimmung des Classifiers dauert eine weitere Minute, es werden Genauigkeiten bis 88,5\% erreicht.
 
 \subsubsection*{T4SA}
-Die Vorverarbeitung verl\"auft analog zu der des \textbf{US Airline Sentiment} Datensatzes. Das Sprachmodell wird aufgrund der Menge der Daten 10 Epochen trainiert, die Trainingsdauer liegt damit bei ca 90 Minuten. Die Feinabstimmung des Classifiers dauert weitere 90 Minuten und die Genauigkeit liegt am Ende bei 0,975. Dieser Datensatz w\"urde von l\"angerem Training noch einen gro{\ss}en Nutzen ziehen: Nach den vergangegen Epochen war noch ein starker sinkender Trend im \textbf{Validation Loss}  zu erkennen. Dies kann mit der Gr\"o{\ss}e des Datensatzes zusammenh\"angen, da kaum M\"oglichkeiten zum \textbf{Overfitting} bestehen.
+Die Vorverarbeitung verl\"auft analog zu der des \textbf{US Airline Sentiment} Datensatzes. Das Sprachmodell wird aufgrund der Menge der Daten 10 Epochen trainiert, die Trainingsdauer liegt damit bei ca 90 Minuten. Die Feinabstimmung des Classifiers dauert weitere 90 Minuten und die Genauigkeit liegt am Ende bei 97,5\%. Dieser Datensatz w\"urde von l\"angerem Training noch einen gro{\ss}en Nutzen ziehen: Nach den vergangegen Epochen war noch ein starker sinkender Trend im \textbf{Validation Loss}  zu erkennen. Dies kann mit der Gr\"o{\ss}e des Datensatzes zusammenh\"angen, da kaum M\"oglichkeiten zum \textbf{Overfitting} bestehen.
 
 \subsubsection*{Auswertung}
 Hier kann sehr gut beobachtet werden, wie sich die Gr\"o{\ss} des Datensatzes auf die Ergebnisse auswirkt: Die steigende Genauigkeit und \textbf{F1-Scores} zeigen, dass das Modell daran insgesamt besser trainieren kann. Die Gefahr des \textbf{Overfitting} ist ebenfalls sehr gering und das Modell k\"onnte insgesamt l\"anger als hier angegeben trainiert werden.
@@ -336,60 +374,257 @@ F1 score & Apple Sentiment & US Airline Sentiment & T4SA\\
 
 %RoBERTa
 \subsection{RoBERTa}
+F\"ur dieses Sprachmodell m\"ussen die Eingabedaten leicht angepasst werden: Die Labels werden in die Zahlen 0, 1 und 2 codiert, damit von dem Modell verarbeitet werden k\"onnen. F\"ur die in Text gegebenen Label wird dies mit einem \textit{dictionary} gl\"ost:
+\lstset{language=Python}
+\lstset{frame=lines}
+\lstset{caption={Umkodieren der sentiment-Label}}
+\lstset{captionpos=b}
+\lstset{label={lst:dict_conv_sentiment}}
+\lstset{basicstyle=\footnotesize}
+\begin{lstlisting}
+thisdict =	{
+  "negative": 0,
+  "neutral": 1,
+  "positive": 2
+}
+df_train.sentiment = df_train.sentiment.apply(lambda x: thisdict[x])
+df_test.sentiment = df_test.sentiment.apply(lambda x: thisdict[x])
+\end{lstlisting}
+Daraufhin wird das vortrainierte Modell von \textit{pytorch} geladen und auf Multi-Label-Erkennung konfiguriert.
+\lstset{language=Python}
+\lstset{frame=lines}
+\lstset{caption={Laden und Konfigurieren des RoBERTa-Modells}}
+\lstset{captionpos=b}
+\lstset{label={lst:load_config_roberta}}
+\lstset{basicstyle=\footnotesize}
+\begin{lstlisting}
+config = RobertaConfig.from_pretrained('roberta-base')
+# Set number of output labels
+config.num_labels = 3
+\end{lstlisting}
+Die Eingabetexte werden danach in \textbf{CUDA}-Vektoren umgewandelt, um von der Parallelisierung durch GPUs Gebrauch zu machen. Das Modell wird im n\"achsten Schritt \"uber 10 Epochen mit einer Lernrate von $1^{-5}$ und dem \textbf{Adam-Optimizer} trainiert. Andere Lernraten wurden ausprobiert, gaben aber schlechtere Ergebnisse.\\
+Eine alternative Version wurde mithilfe der \textbf{SimpleTransformers} Bibliothek implementiert. Diese hat den Vorteil, dass sie einfach zu nutzen und \"ubersichtlich ist, wie aus Listing \ref{lst:simple_roberta} hervorgeht.
+\lstset{language=Python}
+\lstset{frame=lines}
+\lstset{caption={RoBERTa mit SimpleTransformers}}
+\lstset{captionpos=b}
+\lstset{label={lst:simple_roberta}}
+\lstset{basicstyle=\footnotesize}
+\begin{lstlisting}
+from simpletransformers.classification import ClassificationModel
 
-\subsubsection*{Sentiment140}
+model = ClassificationModel('roberta', 'roberta-base', num_labels=3, args={
+    'learning_rate':3e-5,
+    'num_train_epochs': 10,
+    'reprocess_input_data': True,
+    'overwrite_output_dir': True,
+    'process_count': 10,
+    'train_batch_size': 4,
+    'eval_batch_size': 4,
+    'max_seq_length': 512,
+    'fp16': True
+})
+
+model.train_model(df_train)
+\end{lstlisting}
 
 \subsubsection*{Apple Sentiment}
+Das Training \"uber zehn Epochen mit diesem Datensatz dauert eine halbe Stunde. Weniger Epochen f\"uhren dazu, dass der Classifier nur zwischen zwei Klassen unterscheiden kann und die dritte au{\ss}er Acht l\"asst, mit mehr Epochen steigt die Gefahr des \textbf{Overfitting}. Die erreichte Genauigkeit liegt bei 78,6\%, da die dritte Klasse nur selten erkannt wird.\\
+Mit dem \textbf{SimpleTransformer} Modell dauert das Training mit zehn Epochen 15 Minuten und ergibt eine Genauigkeit von 88,7\%. Auch hier wird die dritte Klasse erst nach einigen Epochen Training erkannt.
 
 \subsubsection*{US Airline Sentiment}
 
 \subsubsection*{T4SA}
 
 \subsubsection*{Auswertung}
+Das \textbf{RoBERTa}-Modell kann mit Multi-Klassenl Umgebungen nicht gut umgehen. Dies kann man besonders gut an den \textbf{F1}-Werten f\"ur das positive Label sehen: Um ein besseres Ergebnis zu erreichen muss mit vielen Daten lange trainiert werden.
 \begin{center}
 \begin{tabular}{|c||c|c|c|}
 \hline
 F1 score & Apple Sentiment & US Airline Sentiment & T4SA\\ 
 \hline\hline
--1 &  &  & \\
+-1 & 0,801 &  & \\
 \hline
-0 &  &  & \\ 
+0 & 0,826 &  & \\ 
 \hline
-1 &  &  & \\
+1 & 0,3 &  & \\
+\hline    
+\end{tabular}
+\end{center}
+\textbf{SimpleTransformers}
+\begin{center}
+\begin{tabular}{|c||c|c|c|}
+\hline
+F1 score & Apple Sentiment & US Airline Sentiment & T4SA\\ 
+\hline\hline
+-1 & 0,908 &  & \\
+\hline
+0 & 0,896 &  & \\ 
+\hline
+1 & 0,714 &  & \\
+\hline    
+\end{tabular}
+\end{center}
+
+%XLNet
+\subsection{XLNet}
+Wie auch bei dem \textbf{RoBERTa}-Modell werden hier die Labels so codiert, dass sie mit Indizes vergleichbar sind. Die f\"ur die Verarbeitung durch \textbf{XLNet} n\"otigen Tokens [SEP] und [CLS] werden an jeden Tweet angehangen und der Text wird mit einem XLNetTokenizer zu Tokens umgewandelt. Dies ergibt folgende Struktur f\"ur die Tweets:
+\lstset{language=Python}
+\lstset{frame=lines}
+\lstset{caption={Tweet nach Tokenization}}
+\lstset{captionpos=b}
+\lstset{label={lst:tokenized_tweet}}
+\lstset{basicstyle=\footnotesize}
+\begin{lstlisting}
+ ['_we',  '_need', '_more',   '_products',  '_like',  '_companies',  '_like',  '_need',  '_to',  '_embrace',  '_the',  '_customization',  '_of',  '_quality',  '_themes',  '[',  's',  'ep',  ']',  '_[',  'cl',  's',  ']']
+\end{lstlisting}
+Diese Tokens werden mit dem in Listing \ref{lst:tokenizer_ids} aufef\"uhrten Code in ids umgewandelt und daraufhin auf eine einheitliche L\"ange gebracht.
+\lstset{language=Python}
+\lstset{frame=lines}
+\lstset{caption={Umwandlung in Ids}}
+\lstset{captionpos=b}
+\lstset{label={lst:tokenizer_ids}}
+\lstset{basicstyle=\footnotesize}
+\begin{lstlisting}
+ids_train = [tokenizer.convert_tokens_to_ids(x) for x in tokenized_text_train]
+input_ids_train2 = pad_sequences(ids_train,maxlen=MAX_LEN,dtype="long",
+			truncating="post",padding="post")
+\end{lstlisting}
+Im n\"achsten Schritt werden die entstandenen IDs in Torch Tensoren gewandelt, um sie mit einem DataLoader verarbeiten zu k\"onnen.\\
+Das vortrainierte \textbf{XLNet} wird geladen und auf die Anzahl der Labels (drei) konfiguriert. Mit dem \textbf{Adam-Optimizer} und einer Lernrate von $1^{-5}$ wird das Modell mit dem jeweiligen Datensatz trainiert. Andere Lernraten geben schlechtere Ergebnisse. Die Anzahl der zu lernenden Epochen wurde dem jeweiligen Datensatz angepasst.\\
+Da es sich um ein transformerbasiertes Modell handelt, wurde eine Alternative zum oben beschriebenen Vorgehen mittel \textbf{SimpleTransformers} implementiert. Diese unterscheidet sich nur geringf\"ugig von dem in Listing \ref{lst:simple_roberta} aufgef\"uhrten Code, hier wird statt des \textbf{RoBERTa}-Modells \textbf{XLNet} geladen und trainiert.
+
+\subsubsection*{Apple Sentiment}
+Die Berechnung und Auswertung mit 40 Epochen Training dauert 20 Minuten und liefert eine Genauigkeit von 77,9\%. Bei wenigen Epochen wird auch hier das positive Label nicht mit einbezogen. Mehr Epochen f\"uhren bei dem kleinen Datensatz zu \textbf{Overfitting}.
+
+\subsubsection*{US Airline Sentiment}
+Das Training dauert bei ebenfalls 40 Epochen ca. 40 Minuten, die dabei erreichte Genauigkeit betr\"agt 66,2\%.
+
+\subsubsection*{T4SA}
+
+\subsubsection*{Auswertung}
+Auch hier ist zu beobachten, dass die Multi-Klassen Klassifizierung erst nach mindestens 10 Epochen funktioniert. Wieder empfiehlt es sich, bei den gr\"o{\ss}eren Datens\"atzen l\"anger zu lernen.
+\begin{center}
+\begin{tabular}{|c||c|c|c|}
+\hline
+F1 score & Apple Sentiment & US Airline Sentiment & T4SA\\ 
+\hline\hline
+-1 & 0,763 & 0,809 & \\
+\hline
+0 & 0,836 & 0,283 & \\ 
+\hline
+1 & 0,447 & 0,320 & \\
 \hline    
 \end{tabular}
 \end{center}
 
 %GPT
 \subsection{GPT}
+Das von \textit{OpenAI} direkt bereitgestellte \textbf{GPT}-Modell wurde ebenfalls getestet, ergab aber auch nach intensivem Training keine brauchbaren Ergebnisse. Die dazu aufgestellte These ist, dass die Daten im Gegensatz zu dem Trainingsdatensatz beim Vortraining zu wenig und die Texte insgesamt zu kurz sind. Die jeweilige Ausgabe ergab teilweise eine sinnvolle Fortsetzung des voranstehenden Tweets, die tats\"achlichen Label wurden demnach nicht gelernt, wie in Listing \ref{lst:gpt_results} zu sehen ist. Es ist m\"oglich, dass mit sehr langem Training hier Ergebnisse erzielt werden k\"onnen, dies ist im Rahmen dieser Arbeit aber nicht durchf\"uhrbar.
+\lstset{language=Python}
+\lstset{frame=lines}
+\lstset{caption={Ergebnisse des GPT-Modells}}
+\lstset{captionpos=b}
+\lstset{label={lst:gpt_results}}
+\lstset{basicstyle=\footnotesize}
+\begin{lstlisting}
+Model prompt >>> // x bonus airmiles right now  airmilesshops ||
+====================== SAMPLE 1 =========================
+ noon 
+======================================================
+Model prompt >>> // since when did stop replacing iphone units due to defect  just because i have some scratches on my phone doesnt mean i dropped it ||
+====================== SAMPLE 1 =========================
+nooooooooooooooooo
+======================================================
+Model prompt >>> // i had to get my logic board completely replaced if its 
+under warranty theyll do it for free  make sure to back up b ||
+====================== SAMPLE 1 =========================
+  
+======================================================
+Model prompt >>> // thanks for pushing me into yosemite it has been the worst
+ so slow sand clunky  cantgoback misssnowleopard whathappened ||
+====================== SAMPLE 1 =========================
+ || cm
+======================================================
+\end{lstlisting}
+Die durch \textbf{SimpleTransformers} implementierte L\"osung ist wieder analog zu Listing \ref{lst:simple_roberta}, mit dem Unterschied, dass hier \textbf{GPT2} geladen wird.
 
-\subsubsection*{Sentiment140}
+\section{Stance Detection}
+In den folgenden Unterkapiteln wird auf die Experimente zu \textbf{Stance Detection} eingegangen.
 
-\subsubsection*{Apple Sentiment}
+%ULMFit
+\subsection{ULMFit}
+Entsprechend dem Modell, dass f\"ur \textbf{Sentiment Analysis} genutzt wurde, wurde hier mit den Textdaten ein Sprachmodell antrainiert und anschlie{\ss}end der Classifier mit den Labels trainiert. Die Eingangsdaten wurden zur Verarbeitung der Klassen one-hot-codiert. Das vortrainitert fastai-Sprachmodell konnte ohne Probleme mit den zwei Textinputs umgehen.
 
-\subsubsection*{US Airline Sentiment}
+\subsubsection*{FNC}
 
-\subsubsection*{T4SA}
+\subsubsection*{SemEval}
+Aufgrund der kleinen Anzahl an Daten kann dieses Modell nicht gut trainiert werden. Das Training des Sprachmodells wie auch des Classifiers dauert unter einer Minute, nach acht Epochen sieht man durch steigendes \textbf{Validation Loss} hier schon einen Ansatz von \textbf{Overfitting}. Die erreichte Genauigkeit liegt bei 40,1\%.
 
 \subsubsection*{Auswertung}
 \begin{center}
-\begin{tabular}{|c||c|c|c|}
+\begin{tabular}{|c||c|c|}
 \hline
-F1 score & Apple Sentiment & US Airline Sentiment & T4SA\\ 
+F1 score & FNC & SemEval\\ 
 \hline\hline
--1 &  &  & \\
+0 &  & 0,680\\
 \hline
-0 &  &  & \\ 
+1 &  & 0,462\\ 
 \hline
-1 &  &  & \\
+2 &  & 0,483\\
+\hline
+3 &  & -\\
 \hline    
 \end{tabular}
 \end{center}
 
-\section{Stance Detection}
-
-\subsection{ELMo}
-
+%RoBERTa
 \subsection{RoBERTa}
+Die Daten m\"ussen f\"ur das mit \textbf{SimpleTransformers} implementierte Training in einem Dataframe vorliegen, dass die Spalten "`text\_a"', "`text\_b"' und "`labels"  hat. Entsprechend wurden die Daten umformatiert. Die Anzahl der Labels wurde entsprechend dem Datensatz angepasst. Mit einer Lernrate von $3^{-5}$ wurde das Modell f\"ur eine dem Datensatz angepassten Anzahl an Epochen trainiert.
 
-\subsection{GPT}
+\subsubsection*{FNC}
+
+\subsubsection*{SemEval}
+
+\subsubsection*{Auswertung}
+\begin{center}
+\begin{tabular}{|c||c|c|}
+\hline
+F1 score & FNC & SemEval\\ 
+\hline\hline
+0 &  & \\
+\hline
+1 &  & \\ 
+\hline
+2 &  & \\
+\hline
+3 &  & -\\
+\hline    
+\end{tabular}
+\end{center}
+
+%XLNet
+\subsection{XLNet}
+Beide Datens\"atze werden in die von \textbf{SimpleTransformers} ben\"otigte Form gebracht und ausgewertet. Die Konfiguration des \textbf{XLNet}-Modells ist analog zu der in \textbf{Sentiment Analysis} vorgestellten Variante, die Anzahl der Labels und Epochen wird entsprechend angepasst.\\
+Es wurde eine weitere Version analog zu der in \textbf{Sentiment Analysis} besprochenen implementiert, in der die Textspalten codiert und in Tokens umgewandelt wurden. Hierzu wurden die zu analysierenden Texte nach dem [SEP]-Token an die Aussage bzw. das Target angehangen, das weitere Vorgehen ist identisch.
+
+\subsubsection*{FNC}
+
+\subsubsection*{SemEval}
+
+\subsubsection*{Auswertung}
+\begin{center}
+\begin{tabular}{|c||c|c|}
+\hline
+F1 score & FNC & SemEval\\ 
+\hline\hline
+0 &  & \\
+\hline
+1 &  & \\ 
+\hline
+2 &  & \\
+\hline
+3 &  & -\\
+\hline    
+\end{tabular}
+\end{center}
