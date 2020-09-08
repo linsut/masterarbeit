@@ -159,7 +159,7 @@ yo this the ugliest filter eveeer son  im weaaak&NEG\\
 
 \subsection{Fake News Challenge}
 \label{sec:tfnc}
-Dieser Datensatz besteht aus 49972 Artikeln, verschiedenen Aussagen, die \"uber den Text (oder einen anderen) getroffen wurden und der Beziehung zwischen den Aussagen und den Artikeln \cite{fnc}. Beziehungen werden in die Kategorien "`unrelated"', "`agree"', "`discuss"' und "`disagree"' eingeordnet. Diese Klassifizierung wurde f\"ur die Verarbeitung durch die Modelle numerisch codiert. Da es sich hier um Artikel handelt, m\"ussen bei der Datenreinigung keine Emojis oder \textit{Twitter-Handles} beachtet werden. Die in unterschiedlichen Dateien vorliegenden Artikel werden den Aussagen zugeordnet und danach in Kleinbuchstaben umgewandelt. Zeichensetzung sowie Whitespaces an Anfang und Ende des Artikels werden entfernt. Gek\"urzte Beispiele aus dem Datensatz sind im Folgenden gelistet.
+Dieser Datensatz besteht aus 49972 Artikeln, verschiedenen Aussagen, die \"uber den Text (oder einen anderen) getroffen wurden und der Beziehung zwischen den Aussagen und den Artikeln \cite{fnc}. Beziehungen werden in die Kategorien "`unrelated"', "`agree"', "`discuss"' und "`disagree"' eingeordnet. Diese Klassifizierung wurde f\"ur die Verarbeitung durch die Modelle numerisch codiert. Der Inhalt ist unbalanciert, 73\% der Trainingsdaten sind mit "`unrelated"', 18\% mit "`discuss"' und die restlichen 9\% mit "`disagree"' oder "`agree"' gelabelt. Da es sich hier um Artikel handelt, m\"ussen bei der Datenreinigung keine Emojis oder \textit{Twitter-Handles} beachtet werden. Die in unterschiedlichen Dateien vorliegenden Artikel werden den Aussagen zugeordnet und danach in Kleinbuchstaben umgewandelt. Zeichensetzung sowie Whitespaces an Anfang und Ende des Artikels werden entfernt. Gek\"urzte Beispiele aus dem Datensatz sind im Folgenden gelistet.
 %Beispiele aus gesäubertem Datensatz
 \begin{center}
 \begin{tabular}{|c|c|c|}
@@ -557,6 +557,7 @@ In den folgenden Unterkapiteln wird auf die Experimente zu \textbf{Stance Detect
 Entsprechend dem Modell, dass f\"ur \textbf{Sentiment Analysis} genutzt wurde, wurde hier mit den Textdaten ein Sprachmodell antrainiert und anschlie{\ss}end der Classifier mit den Labels trainiert. Die Eingangsdaten wurden zur Verarbeitung der Klassen one-hot-codiert. Das vortrainitert fastai-Sprachmodell konnte ohne Probleme mit den zwei Textinputs umgehen.
 
 \subsubsection*{FNC}
+20(3h) 5(20min) 5(50min) [0.98661 , 0.808937, 0.938653, 0.594096] 0.9450609423321812-  mehr m\"oglich
 
 \subsubsection*{SemEval}
 Aufgrund der kleinen Anzahl an Daten kann dieses Modell nicht gut trainiert werden. Das Training des Sprachmodells wie auch des Classifiers dauert unter einer Minute, nach acht Epochen sieht man durch steigendes \textbf{Validation Loss} hier schon einen Ansatz von \textbf{Overfitting}. Die erreichte Genauigkeit liegt bei 40,1\%.
@@ -611,6 +612,10 @@ Es wurde eine weitere Version analog zu der in \textbf{Sentiment Analysis} bespr
 \subsubsection*{FNC}
 
 \subsubsection*{SemEval}
+non simple, 20 Epochen ca. 10min
+[0.68282828 0.         0.        ]
+0.5184049079754601
+
 
 \subsubsection*{Auswertung}
 \begin{center}
