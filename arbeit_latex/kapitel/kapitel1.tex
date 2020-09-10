@@ -13,13 +13,13 @@ Mit ganzen Textsequenzen k\"onnen aber auch diese Vektor Embeddings aufgrund der
 
 \section{Problemstellung}
 Wie schon erw\"ahnt muss Sprache sequentiell versarbeitet werden. Dazu werden meist \textbf{Gated RNNs} und \textbf{Long Short Term Memory (LSTM)} - Netzwerke verwendet \cite{attention}. Durch einige Techniken kann man mit diesen Netzen auch gute Laufzeiten erreichen, aber es besteht ein weiteres Problem: Der Kontext der W\"orter geht schnell verloren, da diese Netze einem Wort meist auch nur eine Bedeutung zuordnen k\"onnen.Der Umstand, dass diese Netze f\"ur jede Anwendung spezifisch trainiert werden m\"ussen, macht ihren Einsatz sehr umst\"andlich.\\
-Ein ebenfalls sehr gro{\ss}es Problem in NLP ist die Tatsache, dass \textbf{\"Uberwachtes Lernen} mit erheblichem manuellen Aufwand - dem Annotieren und Labeln der Daten - verbunden ist. Es gibt zwar sehr gro{\ss}e Mengen an Daten, die durch das Internet verf\"ugbar sind (z.B. alle \textit{Wikipedia-Artikel}), diese eignen sich aber nur f\"ur un\"uberwachte Lernmethoden, da sie nicht gelabelt sind. Die Menge an gelabelten Daten hingegen ist verschwinden gering im Vergleich zu allen frei verf\"ugbaren. Dies legt die Entwicklung eines Systems nahe, das mit \textbf{teil-} oder \textbf{fern\"uberwachtem Lernen} auskommt. Heutige Sprachmodelle versuchen hier anzusetzen, indem sie in einem ersten Schritt un\"uberwacht mit Korpussen unterschiedlicher Gr\"o{\ss}e die Repr\"asentation einer Sprache lernen, um dann im zweiten Schritt an die zu erf\"ullende Aufgabe angepasst zu werden. Besonders interessant hierbei sind neueste Entwicklungen \cite{gpt3}, durch die ein Modell sogar mit nur einem Beispiel der zu erf\"ullenden Aufgabe gute Ergebnisse erzielen kann. Dieses Konzept nennt sich \textbf{Transfer Learning}, durch Anwendung in der Bildverarbeitung konnten dadurch gro{\ss}e Verbesserungen in Zeit und Genauigkeit erreicht werden \cite{ulm}, da ein vortrainiertes Modell nur noch mit Feinabstimmungen f\"ur die sp\"atere Aufgabe vorbereitet werden muss.\\
+Ein ebenfalls sehr gro{\ss}es Problem in NLP ist die Tatsache, dass \textbf{\"Uberwachtes Lernen} mit erheblichem manuellen Aufwand - dem Annotieren und Labeln der Daten - verbunden ist. Es gibt zwar sehr gro{\ss}e Mengen an Daten, die durch das Internet verf\"ugbar sind (z.B. alle \textit{Wikipedia-Artikel}), diese eignen sich aber nur f\"ur un\"uberwachte Lernmethoden, da sie nicht gelabelt sind. Die Menge an gelabelten Daten hingegen ist verschwindend gering im Vergleich zu allen frei verf\"ugbaren. Dies legt die Entwicklung eines Systems nahe, das mit \textbf{teil-} oder \textbf{fern\"uberwachtem Lernen} auskommt. Heutige Sprachmodelle versuchen hier anzusetzen, indem sie in einem ersten Schritt un\"uberwacht mit Korpussen unterschiedlicher Gr\"o{\ss}e die Repr\"asentation einer Sprache lernen, um dann im zweiten Schritt an die zu erf\"ullende Aufgabe angepasst zu werden. Besonders interessant hierbei sind neueste Entwicklungen \cite{gpt3}, durch die ein Modell sogar mit nur einem Beispiel der zu erf\"ullenden Aufgabe gute Ergebnisse erzielen kann. Dieses Konzept nennt sich \textbf{Transfer Learning}, durch Anwendung in der Bildverarbeitung konnten dadurch gro{\ss}e Verbesserungen in Zeit und Genauigkeit erreicht werden \cite{ulm}, da ein vortrainiertes Modell nur noch mit Feinabstimmungen f\"ur die sp\"atere Aufgabe vorbereitet werden muss.\\
 Das grunds\"atzliche Ziel von Sprachmodellen ist die Ausgabe des Wortes, das am wahrscheinlichsten auf eine Eingabesequenz folgt. Direkt anwendbar ist dies z.B. auf Textgeneration und \"Ubersetzungen, w\"ahrend f\"ur andere Aufgaben leichte \"Anderungen vorgenommen werden m\"ussen um z.B. f\"ur \textbf{Sentiment Analysis} eine Zahl zu erhalten, die dem in der Eingabe erkannten Sentiment entspricht. Sieht man diese Zahl als das vorrauszusagende Wort an k\"onnen diese \"Anderungen recht leicht umgesetzt werden.
 
 
 
 \section{Sprachmodelle auf Basis von LSTMs}
-\textbf{LSTMs} k\"onnen aufgrund ihrer Architektur gut mit kurzen S\"atzen umgehen, aber je l\"anger die Wortsequenz, desto schlechter kann sie verarbeitet werden: Es gibt dabei Probleme mit \textbf{vanishing} oder \textbf{exploding gradients}, je nach Einstellung der Parameter.\\
+\textbf{LSTMs} k\"onnen aufgrund ihrer Architektur gut mit kurzen S\"atzen umgehen, aber je l\"anger die Wortsequenz, desto schlechter kann sie verarbeitet werden \cite{gpt}.\\
 Durch die sequentiellen Verarbeitung steigt die Verarbeitungszeit mit der Textl\"ange an, wodurch \textbf{LSTMs} generell langsamer sind als \textbf{RNNs}, da die Neuronen komplexer sind.\\
 Trotz dieser Nachteile k\"onnen mit dieser Architektur f\"ur einige Anwendungen geeignete Sprachmodelle erstellt werden.
 
@@ -37,7 +37,7 @@ Trotz dieser Nachteile k\"onnen mit dieser Architektur f\"ur einige Anwendungen 
 Die zweischichtige Architektur besteht aus jeweils einem \textbf{Feed-Forward} Netz, dessen Layer in Abbildung \ref{fig:elmo_layers} in rot eingezeichnet sind und einem \textbf{Feed-Backward} Netz, das in blau dargestellt ist. Damit ist \textbf{ELMo} ein sogenanntes \textbf{bidirektionales Sprachmodell}. Die Schichten bestehen aus jeweils 4096 LSTM-Zellen und zwischen den zwei Schichten gibt es eine Verbindung zur Eingabeschicht.\\
 
 \textbf{Input und Output}\\
-Wie in der Abbildung \ref{fig:elmo_layers} zu sehen, gibt es drei Repr\"asentationen f\"ur ein Wort, eine in jeder Schicht. Zusammengenommen ergeben sie das ELMo Embedding.
+Wie in der Abbildung \ref{fig:elmo_layers} zu sehen, gibt es drei Repr\"asentationen f\"ur ein Wort, eine in jeder Schicht. Zusammengenommen ergeben sie das \textbf{ELMo Embedding}.
 \begin{figure}[!ht]
 \centering
 \includegraphics[height=5cm]{pics/elmo_character_token.png}
@@ -64,7 +64,7 @@ Bei der Arbeit mit \textbf{ULMFit} werden generell drei Schritte ausgef\"uhrt \c
 Schritt 1. muss bei Einsatz des Modells nicht ausgef\"uhrt werden, da diese Version des Modells verf\"ugbar ist. Durch diesen Schritt lernt das Modell, in den verschiedenen Schichten die Merkmale der (in diesem Fall englischen) Sprache abzubilden. Bei Schritt 2. wird mit \textbf{discriminative Fine-Tuning} und einer abgeschr\"agten, dreieckigen Lernrate gearbeitet, um Merkmale der in der Aufgabe genutzen Sprache zu lernen. Diese Lernrate wird angewandt, da die verschiedenen Schichten unterschiedliche Merkmale lernen sollen und sich damit die letzten Schichten nicht mehr viel ver\"andern. Schritt 3. nutzt \textbf{gradual unfreezing} sowie die beiden in Schritt 2. genutzten Techniken f\"ur die Feinabstimmung. Hierf\"ur werden an das Sprachmodell zwei lineare Schichten mit ReLu Activation, dropout und Batchnormalisierung und eine Softmax-Schicht f\"ur die Ausgabe.\\
 
 \textbf{Input und Output}\\
-Die Input-Sequenzen werden vor der Verarbeitung in den LSTM-Schichten in 400 dimensionale Word Embeddings umgewandelt.\\
+Die Input-Sequenzen werden vor der Verarbeitung in den LSTM-Schichten in 400 dimensionale \textbf{Word Embeddings} umgewandelt.\\
 Wie bei Sprachmodellen \"ublich ist der Output von \textbf{ULMFit} eine Wahrscheinlichkeitsverteilung \"uber das Vokabular, um das mit h\"ochster Wahrscheinlichkeit als n\"achtes im Satz kommendes Wort auszugeben.\\
 
 \textbf{Trainingsdaten}\\
@@ -73,7 +73,7 @@ Wie bei Sprachmodellen \"ublich ist der Output von \textbf{ULMFit} eine Wahrsche
 
 
 \section{Sprachmodelle auf Basis von Transformern}
-\textbf{Transformer} sind die Basis der heute meistgenutzten Sprachmodelle \cite{bert}\cite{gpt}. Sie wurden 2017 entwickelt, um das Problem der sequentiellen Verarbeitung in Maschineller \"Ubersetzung zu l\"osen: Als Eingabe kann ein \textbf{Transformer} eine ganze Textsequenz verarbeiten. Die wichtigste Komponente in diesem System ist \textbf{Attention}: Dadurch kann einem Wort sein Kontext innerhalb der betrachteten Sequenz zugeordnet werden.\\
+\textbf{Transformer} sind die Basis der heute meistgenutzten Sprachmodelle \cite{bert}\cite{gpt}. Sie wurden 2017 entwickelt, um das Problem der sequentiellen Verarbeitung in Maschineller \"Ubersetzung zu l\"osen: Als Eingabe kann ein \textbf{Transformer} eine ganze Textsequenz verarbeiten. Die wichtigste Komponente in diesem System ist \textbf{Attention}: Dadurch kann einem Wort sein Kontext innerhalb der betrachteten Sequenz zugeordnet werden \cite{attention}.\\
 \begin{figure}[!ht]
 \centering
 \includegraphics{pics/attention.jpg}
