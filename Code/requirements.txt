@@ -1,0 +1,13 @@
+pandas==1.1.1
+keras
+tensorflow_hub==0.9.0 
+sklearn==0.0
+transformers==2.11.0
+simpletransformers==0.41.1
+pytorch-transformers==1.2.0
+torch==1.6.0
+ipywidgets
+nodejs==0.1.1
+matplotlib==3.3.1
+fastai==2.0.10
+gpt_2_simple==0.7.1
